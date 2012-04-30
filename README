@@ -1,0 +1,25 @@
+Mode Template for extending Java mode in Processing IDE 2.0a5 or later.
+
+Florian Jenett
+Martin Leopold
+
+April 30, 2012
+
+
+Instructions:
+
+* You need Processing 2.0a5 or later, we built trunk from SVN.
+* You need Apache Ant to build.
+
+* Set properties in build.xml
+    * The name of your mode (lib.name) must end in "Mode" (e.g. MyFancyMode) otherwise it won't work.
+    * Set the path to your processing jars (core.jar, pde.jar)
+    * If you want to automatically install your mode (target: install ), set the path to your modes folder (typically a folder named "modes" inside your sketchbook folder)
+    * If you want to run processing after building (target: run), set the path to your processing executable.
+
+* Other libraries that you need in your mode can be placed in "lib". They will be added to the classpath for building and bundled with your mode.
+
+* Ant Targets:
+    * build: builds your mode, creates a folder containing the mode in "dist". This can be put into the modes folder inside your sketchbook.
+    * install: builds your mode and copies it to your modes folder.
+    * run: builds and installs your mode, then runs processing.
