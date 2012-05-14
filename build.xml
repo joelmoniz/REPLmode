@@ -1,67 +1,67 @@
 <?xml version="1.0"?>
 <project name="skel-mode" default="install" basedir="./">
     <description>Template for extending Java Mode in Processing >2.0a5</description>
-    
+
     <!-- name of your mode package (will be used as dir name) -->
     <property name="lib.name" 	value="TemplateMode" />
-    
+
     <!-- version -->
     <property name="release" 	value="0.0.1" />
-    
+
     <!-- java version -->
     <property name="java.target.version" value="1.6" />
-    
+
     <!-- location of processing jars (core.jar, pde.jar, ..) -->
-    <property name="processing.classes" location="/Users/mlg/Documents/NetbeansProjects/p5-svn/svn/processing/build/macosx/work/Processing.app/Contents/Resources/Java/" />
-    
+    <property name="processing.classes" location="/Users/mlg/Documents/NetbeansProjects/p5-svn/trunk/processing/build/macosx/work/Processing.app/Contents/Resources/Java/" />
+
     <!-- folder to install modes in (probably a folder called "modes" inside your sketchbook folder) -->
     <property name="processing.modes" location="/Users/mlg/Documents/Processing/modes"/>
-    
+
     <!-- path to your processing executable. -->
-    <property name="processing.executable" location="/Users/mlg/Documents/NetbeansProjects/p5-svn/svn/processing/build/macosx/work/Processing.app/Contents/MacOS/JavaApplicationStub"/>
+    <property name="processing.executable" location="/Users/mlg/Documents/NetbeansProjects/p5-svn/trunk/processing/build/macosx/work/Processing.app/Contents/MacOS/JavaApplicationStub"/>
 
 
 
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - --> 
+    <!-- - - - - - - - - - - - - - - - - - - - - - - -->
     <property name="src" 		value="src" />
     <property name="build" 		value="build" />
     <property name="bin" 		value="bin" />
-    <property name="dist" 		value="dist" /> 
-        
+    <property name="dist" 		value="dist" />
+
     <path id="library-classpath">
         <fileset dir="${processing.classes}" >
             <include name="*.jar" />
         </fileset>
-                
+
         <fileset dir="lib" >
             <include name="*.jar" />
-        </fileset>   
+        </fileset>
     </path>
-	
+
     <!-- - - - - - - - - - - - - - - - - - - - - - -
         HELP
     - - - - - - - - - - - - - - - - - - - - - - - -->
     <target name="help">
         <echo>HEELP!</echo>
     </target>
-	
+
     <!-- - - - - - - - - - - - - - - - - - - - - - -
         BUILD
     - - - - - - - - - - - - - - - - - - - - - - - -->
     <target name="build">
         <propertyfile file="build.number" /> <!-- create the build.number file if it doesn't exist -->
         <buildnumber file="build.number" />
-		
+
         <mkdir dir="${build}" />
-		
+
         <javac srcdir="${src}" destdir="${build}" source="${java.target.version}" includeantruntime="false">
             <classpath>
                 <path refid="library-classpath"/>
             </classpath>
         </javac>
     </target>
-	
+
     <!-- - - - - - - - - - - - - - - - - - - - - - -
         PACKAGE
     - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -70,32 +70,32 @@
         <property name="bundle" value="${dist}/${lib.name}"/>
         <mkdir dir="${bundle}" />
         <mkdir dir="${bundle}/mode" />
-		
+
         <jar jarfile="${bundle}/mode/${lib.name}.jar" basedir="build"/>
 		<!--zip destfile="${dist}/mode/${lib.name}.jar" excludes="**/*.MF">
 		    <zipgroupfileset dir="lib" includes="*.jar" />
 		</zip-->
-		
+
         <copy todir="${bundle}">
             <fileset dir="resources/" />
         </copy>
-                
+
         <copy todir="${bundle}/mode">
             <fileset dir="lib/" />
         </copy>
-		
+
         <replaceregexp file="${bundle}/mode.properties" flags="g"
                                match="@@version@@" replace="${build.number}" />
         <replaceregexp file="${bundle}/mode.properties" flags="g"
                                match="@@pretty-version@@" replace="${release}" />
     </target>
-	
+
     <!-- - - - - - - - - - - - - - - - - - - - - - -
         INSTALL
     - - - - - - - - - - - - - - - - - - - - - - - -->
     <target name="install" depends="package" >
         <delete dir="${processing.modes}/${lib.name}" />
-		
+
         <copy todir="${processing.modes}/">
             <fileset dir="${dist}" />
         </copy>
@@ -108,7 +108,7 @@
         <delete dir="${build}" />
         <delete dir="${dist}" />
     </target>
-        
+
     <!-- - - - - - - - - - - - - - - - - - - - - - -
         RUN
     - - - - - - - - - - - - - - - - - - - - - - - -->
