@@ -23,6 +23,8 @@ Instructions
     * If you want to automatically install your mode (target: install ), set the path to your modes folder (typically a folder named "modes" inside your sketchbook folder)
     * If you want to run processing after building (target: run), set the path to your processing executable.
 
+* Set properties in resources/mode.properties (This is for properly identifying your mode to the mode manager in the PDE)
+
 * Other libraries that you need in your mode can be placed in "lib". They will be added to the classpath for building and bundled with your mode.
 
 * Ant Targets:
