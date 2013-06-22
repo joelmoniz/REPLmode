@@ -1,5 +1,5 @@
-Mode Template for Processing 2.0a5 or later
-===========================================
+Mode Template for Processing 2.0
+================================
 
 [www.processing.org](http://www.processing.org)
 
@@ -12,7 +12,7 @@ Notes
 
 Requirements
 ------------
-* Processing 2.0a5 or later, we built trunk from SVN (April 30, 2012)
+* Processing 2.0 or later. We built from GitHub (June 22, 2013)
 * Apache Ant to build.
 
 Instructions
