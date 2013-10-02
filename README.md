@@ -19,6 +19,7 @@ Instructions
 ------------
 * Set properties in build.xml
     * The name of your mode (lib.name) must end in "Mode" (e.g. MyFancyMode) otherwise it won't work.
+    * Your Mode subclass must also have the same name as lib.name, as well as the project name for build.xml.
     * Set the path to your processing jars (core.jar, pde.jar)
     * If you want to automatically install your mode (target: install ), set the path to your modes folder (typically a folder named "modes" inside your sketchbook folder)
     * If you want to run processing after building (target: run), set the path to your processing executable.

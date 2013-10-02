@@ -3,10 +3,11 @@
     <description>Template for extending Java Mode in Processing 2.0</description>
 
     <!-- name of your mode package (will be used as dir name) -->
-    <property name="lib.name" 	value="Mode Template" />
+	<!-- note, this must be the same name as your mode subclass, AND the same name as this build project. -->
+    <property name="lib.name" 	value="TemplateMode" />
 
     <!-- version -->
-    <property name="release" 	value="0.1" />
+    <property name="release"	value="0.1" />
 
     <!-- java version -->
     <property name="java.target.version" value="1.6" />
