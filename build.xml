@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<project name="REPLmode" default="install" basedir="./">
+<project name="REPLMode" default="install" basedir="./">
     <description>Mode for providing an REPL console in Processing 2.0+</description>
 
     <!-- name of your mode package (will be used as dir name) -->
 	<!-- note, this must be the same name as your mode subclass, AND the same name as this build project. -->
-    <property name="lib.name" 	value="REPLmode" />
+    <property name="lib.name" 	value="REPLMode" />
 
     <!-- version -->
     <property name="release"	value="0.1" />
@@ -13,14 +13,14 @@
     <property name="java.target.version" value="1.6" />
 
     <!-- location of processing jars (core.jar, pde.jar, ..) -->
-    <property name="processing.classes.core" location="../../processing/core/library/" />
-    <property name="processing.classes.pde" location="../../processing/app/" />
+    <property name="processing.classes.core" location="${user.home}/Documents/My Projects/OSS/Processing-related/processing/core/library/" />
+    <property name="processing.classes.pde" location="${user.home}/Documents/My Projects/OSS/Processing-related/processing/app/" />
     
     <!-- folder to install modes in (probably a folder called "modes" inside your sketchbook folder) -->
     <property name="processing.modes" location="${user.home}/Documents/Processing/modes"/>
 
     <!-- path to your processing executable. -->
-    <property name="processing.executable" location="../../processing/build/windows/work/processing"/>
+    <property name="processing.executable" location="${user.home}/Documents/My Projects/OSS/Processing-related/processing/build/windows/work/processing"/>
 
 
 
