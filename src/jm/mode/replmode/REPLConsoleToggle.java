@@ -14,7 +14,7 @@ import javax.swing.JPanel;
  * Toggle Button displayed in the editor line status panel for toggling bewtween
  * console and REPL.
  * 
- * Code from XQConsoleToggle class in processing-experimental
+ * Code adapted from XQConsoleToggle class in processing-experimental.
  * 
  * @author Manindra Moharana &lt;me@mkmoharana.com&gt;
  * @author Joel Ruben Antony Moniz
@@ -23,11 +23,11 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class REPLConsoleToggle extends JPanel implements MouseListener {
-	public static final String CONSOLE = "Console", REPL = "REPL" ;
-	
+	public static final String CONSOLE = "Console", REPL = "REPL";
+
 	private boolean toggleText = true;
 	private boolean toggleBG = true;
-	
+
 	/**
 	 * Height of the component
 	 */
@@ -57,7 +57,7 @@ public class REPLConsoleToggle extends JPanel implements MouseListener {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		
+
 		// On mouse hover, text and background color are changed.
 		if (toggleBG) {
 			g.setColor(new Color(0xff9DA7B0));
@@ -72,22 +72,23 @@ public class REPLConsoleToggle extends JPanel implements MouseListener {
 			g.fillRect(0, 0, 4, this.getHeight());
 			g.setColor(Color.WHITE);
 		}
-		
+
 		g.drawString(buttonName, getWidth() / 2 + 2 // + 2 is a offset
 				- getFontMetrics(getFont()).stringWidth(buttonName) / 2,
 				this.getHeight() - 6);
-		if(drawMarker){
-      g.setColor(markerColor);
-      g.fillRect(4, 0, 2, this.getHeight());
-    }
+		if (drawMarker) {
+			g.setColor(markerColor);
+			g.fillRect(4, 0, 2, this.getHeight());
+		}
 	}
-	
-	boolean drawMarker = false; 
+
+	boolean drawMarker = false;
 	protected Color markerColor;
-	public void updateMarker(boolean value, Color color){
-	  drawMarker = value;
-	  markerColor = color;
-	  repaint();
+
+	public void updateMarker(boolean value, Color color) {
+		drawMarker = value;
+		markerColor = color;
+		repaint();
 	}
 
 	@Override

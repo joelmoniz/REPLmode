@@ -3,6 +3,7 @@ package jm.mode.replmode;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import processing.app.Base;
@@ -40,7 +41,15 @@ public class REPLEditor extends JavaEditor {
 	 */
 	protected REPLConsoleToggle btnShowREPL;
 
+	/**
+	 * REPL/Console Pane
+	 */
 	protected REPLConsolePane replConsole;
+
+	/**
+	 * Clear REPL/Console panes button
+	 */
+	protected ConsoleButtons consoleOptions;
 
 	protected REPLEditor(Base base, String path, EditorState state, Mode mode) {
 		super(base, path, state, mode);
@@ -63,17 +72,25 @@ public class REPLEditor extends JavaEditor {
 		btnShowConsole.addMouseListener(btnShowConsole);
 		btnShowREPL.addMouseListener(btnShowREPL);
 
-		JPanel toggleButtonPanel = new JPanel(new BorderLayout());
-		toggleButtonPanel.add(btnShowConsole, BorderLayout.EAST);
-		toggleButtonPanel.add(btnShowREPL, BorderLayout.WEST);
+		consoleOptions = new ConsoleButtons(ConsoleButtons.CLEAR,
+				lineStatus.getHeight(), console, replConsole);
+		consoleOptions.addMouseListener(consoleOptions);
+		consoleOptions.addMouseMotionListener(consoleOptions);
+
+		JPanel toggleButtonPanel = new JPanel();
+		toggleButtonPanel.setLayout(new BoxLayout(toggleButtonPanel,
+				BoxLayout.LINE_AXIS));
+
+		toggleButtonPanel.add(consoleOptions);
+		toggleButtonPanel.add(btnShowREPL);
+		toggleButtonPanel.add(btnShowConsole);
 		lineStatusPanel.add(toggleButtonPanel, BorderLayout.EAST);
+
 		lineStatus.setBounds(0, 0, toggleButtonPanel.getX() - 1,
 				toggleButtonPanel.getHeight());
 		lineStatusPanel.add(lineStatus);
 		consolePanel.add(lineStatusPanel, BorderLayout.SOUTH);
 		lineStatusPanel.repaint();
-
-		// replScrollPane.add(replConsole);
 
 		// Adding JPanel with CardLayout for Console/REPL Toggle
 		consolePanel.remove(1);
