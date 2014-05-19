@@ -55,7 +55,6 @@ public class REPLEditor extends JavaEditor {
 		super(base, path, state, mode);
 
 		replConsole = new REPLConsolePane(this);
-
 		addREPLConsoleUI();
 	}
 
@@ -105,6 +104,8 @@ public class REPLEditor extends JavaEditor {
 	public void showConsoleOrREPL(String buttonName) {
 		CardLayout cl = (CardLayout) consoleREPLPane.getLayout();
 		cl.show(consoleREPLPane, buttonName);
+		if (REPLConsoleToggle.REPL.equals(buttonName))
+			replConsole.requestFocus();
 	}
 
 }
