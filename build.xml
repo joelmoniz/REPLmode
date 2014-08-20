@@ -13,14 +13,14 @@
     <property name="java.target.version" value="1.6" />
 
     <!-- location of processing jars (core.jar, pde.jar, ..) -->
-    <property name="processing.classes.core" location="${user.home}/Documents/My Projects/OSS/Processing-related/processing/core/library/" />
-    <property name="processing.classes.pde" location="${user.home}/Documents/My Projects/OSS/Processing-related/processing/app/" />
+    <property name="processing.classes.core" location="/p5/processing/core/library/" />
+    <property name="processing.classes.pde" location="/p5/processing/app/" />
     
     <!-- folder to install modes in (probably a folder called "modes" inside your sketchbook folder) -->
     <property name="processing.modes" location="${user.home}/Documents/Processing/modes"/>
 
     <!-- path to your processing executable. -->
-    <property name="processing.executable" location="${user.home}/Documents/My Projects/OSS/Processing-related/processing/build/windows/work/processing"/>
+    <property name="processing.executable" location="/p5/processing/build/windows/work/processing"/>
 
 
 

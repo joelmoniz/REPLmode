@@ -2,15 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="C:/Users/Joey&apos;s Laptop/Documents/My Projects/OSS/Processing-related/processing/app/pde.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/Joey&apos;s%20Laptop/Documents/My%20Projects/OSS/Processing-related/processing/app/pde.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Joey&apos;s Laptop/Documents/My Projects/OSS/Processing-related/processing/core/library/core.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/Joey&apos;s%20Laptop/Documents/My%20Projects/OSS/Processing-related/processing/core/library/core.jar!/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="E:/p5/processing/app/pde.jar"/>
+	<classpathentry kind="lib" path="E:/p5/processing/build/windows/work/core/library/core.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

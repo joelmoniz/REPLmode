@@ -39,7 +39,7 @@ import processing.app.Editor;
 public class REPLConsolePane extends JPanel implements KeyListener,
 		CaretListener, MouseListener {
 
-	private static final String PROMPT = "REPL>> ";
+	private static final String PROMPT = "» ";
 
 	protected JScrollPane replScrollPane;
 
@@ -77,7 +77,7 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 		replPromptPane = new JEditorPane();
 
 		replPromptPane.setEditable(false);
-		replPromptPane.setText("REPL>> ");
+		replPromptPane.setText(PROMPT);
 		replPromptPane.setPreferredSize(new Dimension(getFontMetrics(getFont())
 				.stringWidth(PROMPT + "  "), this.getHeight()));
 
