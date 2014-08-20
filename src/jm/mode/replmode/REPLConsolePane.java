@@ -3,6 +3,7 @@ package jm.mode.replmode;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
@@ -11,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,6 +24,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Utilities;
 
 import processing.app.Editor;
+import processing.app.Preferences;
 
 /**
  * Console part of the REPL: The JPanel that is displayed when the user clicks
@@ -54,11 +57,16 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 	public REPLConsolePane(Editor editor) {
 
 		replInputPane = new JEditorPane();
+		
+		String fontName = Preferences.get("editor.font.family");
+		int fontSize = Preferences.getInteger("console.font.size");
 
 		// Appearance-related
 		replInputPane.setBackground(Color.BLACK);
 		replInputPane.setForeground(Color.LIGHT_GRAY);
-		this.replInputPane.setCaretColor(Color.LIGHT_GRAY);
+		replInputPane.setCaretColor(Color.LIGHT_GRAY);
+		replInputPane.setFont(new Font(fontName,
+				Font.PLAIN, fontSize));
 
 		// Listener-related
 		// Removing mouse listeners, adding my own
@@ -78,11 +86,19 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 
 		replPromptPane.setEditable(false);
 		replPromptPane.setText(PROMPT);
-		replPromptPane.setPreferredSize(new Dimension(getFontMetrics(getFont())
-				.stringWidth(PROMPT + "  "), this.getHeight()));
 
 		replPromptPane.setBackground(Color.BLACK);
 		replPromptPane.setForeground(Color.LIGHT_GRAY);
+		replPromptPane.setFont(new Font(fontName,
+				Font.PLAIN, fontSize));
+		
+		replPromptPane.setPreferredSize(new Dimension((int)(getFontMetrics(getFont())
+				.stringWidth(PROMPT)*fontSize/6.0f), this.getHeight()));
+		replPromptPane.setMinimumSize(new Dimension((int)(getFontMetrics(getFont())
+				.stringWidth(PROMPT)*fontSize/6.0f), this.getHeight()));
+		replPromptPane.setMaximumSize(new Dimension((int)(getFontMetrics(getFont())
+				.stringWidth(PROMPT)*fontSize/6.0f), this.getHeight()));
+		replPromptPane.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
 		JPanel promptInputPanel = new JPanel(new GridBagLayout());
 
@@ -212,8 +228,7 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-	}
+	public void keyTyped(KeyEvent e) {}
 
 	@Override
 	public void caretUpdate(CaretEvent c) {
@@ -233,22 +248,14 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
-
-	}
+	public void mouseEntered(MouseEvent arg0) {}
 
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-
-	}
+	public void mouseExited(MouseEvent arg0) {}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-
-	}
+	public void mousePressed(MouseEvent arg0) {}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-
-	}
+	public void mouseReleased(MouseEvent arg0) {}
 }
