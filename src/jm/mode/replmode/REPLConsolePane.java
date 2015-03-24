@@ -42,7 +42,7 @@ import processing.app.Preferences;
 public class REPLConsolePane extends JPanel implements KeyListener,
 		CaretListener, MouseListener {
 
-	private static final String PROMPT = "» ";
+	private static final String PROMPT = ">>";
 
 	protected JScrollPane replScrollPane;
 
@@ -98,7 +98,7 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 				.stringWidth(PROMPT)*fontSize/6.0f), this.getHeight()));
 		replPromptPane.setMaximumSize(new Dimension((int)(getFontMetrics(getFont())
 				.stringWidth(PROMPT)*fontSize/6.0f), this.getHeight()));
-		replPromptPane.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+//		replPromptPane.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
 		JPanel promptInputPanel = new JPanel(new GridBagLayout());
 
