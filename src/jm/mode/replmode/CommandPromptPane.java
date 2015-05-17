@@ -13,6 +13,13 @@ import javax.swing.text.NavigationFilter;
 import javax.swing.text.Position;
 import javax.swing.text.Utilities;
 
+/**
+ * Class responsible for setting up a NavigationFilter that makes a JTextArea
+ * have command-prompt-esque properties.
+ * 
+ * Code adapted from 
+ * <a href=http://www.coderanch.com/t/508726/GUI/java/creating-custom-command-prompt-java#post_text_2299445>here</a>.
+ */
 public class CommandPromptPane extends NavigationFilter {
   private int prefixLength;
 
@@ -103,7 +110,6 @@ public class CommandPromptPane extends NavigationFilter {
 
   // Refer : http://stackoverflow.com/a/2750099/2427542
   // Refer : http://stackoverflow.com/a/13375811/2427542
-
   /**
    * Use to get line number at which caret is placed.
    * 
