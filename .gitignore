@@ -1,4 +1,4 @@
-/nbproject/
-/build/
-/dist/
-/build.number
+build/
+dist/
+build.number
+bin/
