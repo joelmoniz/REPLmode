@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="E:/p5/processing/app/pde.jar"/>
-	<classpathentry kind="lib" path="E:/p5/processing/build/windows/work/core/library/core.jar"/>
+	<classpathentry kind="lib" path="lib/core.jar"/>
+	<classpathentry kind="lib" path="lib/pde.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
