@@ -2,25 +2,14 @@ package jm.mode.replmode;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.text.Utilities;
 
 import processing.app.Editor;
@@ -36,47 +25,51 @@ import processing.app.Preferences;
 // TODO : Add colorization
 // DONE : Add prompt
 // DONE : Ensure only appropriate parts are modifiable
-// TODO: Set font based on user preference
+// DONE: Set font based on user preference
+// TODO: Update font as soon as user changes it in preferences window
 
 @SuppressWarnings("serial")
-public class REPLConsolePane extends JPanel implements KeyListener,
-		CaretListener, MouseListener {
+public class REPLConsolePane extends JPanel/* implements KeyListener,
+		CaretListener, MouseListener */{
 
-	private static final String PROMPT = ">>";
+	private static final String PROMPT = ">> ";
 
 	protected JScrollPane replScrollPane;
-
-	protected JEditorPane replInputPane;
-	protected JEditorPane replPromptPane;
-
+	
+	protected JTextArea replInputArea;
+	protected CommandPromptPane replInputPaneFilter;
+//	protected JEditorPane replPromptPane;
+/*
 	private int previousCaretLine;
 	private int previousCaretPosition;
 
 	private boolean isClearing;
-
+*/
 	public REPLConsolePane(Editor editor) {
 
-		replInputPane = new JEditorPane();
+	  replInputArea  = new JTextArea(PROMPT);
+		replInputPaneFilter = new CommandPromptPane(PROMPT, replInputArea);
+		replInputArea.setNavigationFilter(replInputPaneFilter);
 		
 		String fontName = Preferences.get("editor.font.family");
-		int fontSize = Preferences.getInteger("console.font.size");
+		int fontSize = Preferences.getInteger("editor.font.size");
 
 		// Appearance-related
-		replInputPane.setBackground(Color.BLACK);
-		replInputPane.setForeground(Color.LIGHT_GRAY);
-		replInputPane.setCaretColor(Color.LIGHT_GRAY);
-		replInputPane.setFont(new Font(fontName,
+		replInputArea.setBackground(Color.BLACK);
+		replInputArea.setForeground(Color.LIGHT_GRAY);
+		replInputArea.setCaretColor(Color.LIGHT_GRAY);
+		replInputArea.setFont(new Font(fontName,
 				Font.PLAIN, fontSize));
 
 		// Listener-related
 		// Removing mouse listeners, adding my own
-		for (MouseListener m : replInputPane.getMouseListeners())
-			replInputPane.removeMouseListener(m);
-		for (MouseMotionListener m : replInputPane.getMouseMotionListeners())
-			replInputPane.removeMouseMotionListener(m);
-		replInputPane.addMouseListener(this);
-		replInputPane.addKeyListener(this);
-		replInputPane.addCaretListener(this);
+		/*		for (MouseListener m : replInputArea.getMouseListeners())
+			replInputArea.removeMouseListener(m);
+		for (MouseMotionListener m : replInputArea.getMouseMotionListeners())
+			replInputArea.removeMouseMotionListener(m);
+		replInputArea.addMouseListener(this);
+		replInputArea.addKeyListener(this);
+		replInputArea.addCaretListener(this);
 
 		previousCaretLine = 1;
 		previousCaretPosition = 0;
@@ -97,9 +90,9 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 		replPromptPane.setMinimumSize(new Dimension((int)(getFontMetrics(getFont())
 				.stringWidth(PROMPT)*fontSize/6.0f), this.getHeight()));
 		replPromptPane.setMaximumSize(new Dimension((int)(getFontMetrics(getFont())
-				.stringWidth(PROMPT)*fontSize/6.0f), this.getHeight()));
+				.stringWidth(PROMPT)*fontSize/6.0f), this.getHeight()));*/
 //		replPromptPane.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-
+/*
 		JPanel promptInputPanel = new JPanel(new GridBagLayout());
 
 		GridBagConstraints c = new GridBagConstraints();
@@ -113,12 +106,12 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.weightx = 1.0;
 		c.fill = GridBagConstraints.BOTH;
-		promptInputPanel.add(replInputPane, c);// , BorderLayout.EAST);
-
-		replScrollPane = new JScrollPane();
+		promptInputPanel.add(replInputArea, c);// , BorderLayout.EAST);
+*/
+		replScrollPane = new JScrollPane(replInputArea);
 		replScrollPane.setBorder(new EtchedBorder());
 
-		replScrollPane.setViewportView(promptInputPanel);
+//		replScrollPane.setViewportView(promptInputPanel);
 		replScrollPane
 				.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -132,17 +125,17 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 	 * selected
 	 */
 	public void requestFocus() {
-		replInputPane.grabFocus();
+		replInputArea.grabFocus();
 	}
 
 	protected void clear() {
-		isClearing = true;
-		replPromptPane.setText("");
-		replPromptPane.setText(PROMPT);
-		replInputPane.setText("");
-		previousCaretLine = 1;
-		previousCaretPosition = 0;
-		isClearing = false;
+//		isClearing = true;
+//		replPromptPane.setText("");
+//		replPromptPane.setText(PROMPT);
+		replInputArea.setText(PROMPT);
+//		previousCaretLine = 1;
+//		previousCaretPosition = 0;
+//		isClearing = false;
 	}
 
 	// Refer : http://stackoverflow.com/a/2750099/2427542
@@ -191,7 +184,7 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 		}
 		return -1;
 	}
-
+/*
 	private void appendText(JEditorPane editor, String string) {
 		Document doc = editor.getDocument();
 
@@ -204,8 +197,8 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
-	}
-
+	} */
+/*
 	@Override
 	public void keyPressed(KeyEvent e) {
 
@@ -216,7 +209,7 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 		if (isClearing)
 			return;
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-			int row = getRow(replInputPane);
+			int row = getRow(replInputArea);
 			System.out.println(row);
 			for (int i = previousCaretLine; i < row; i++) {
 				appendText(replPromptPane, "\n");
@@ -234,8 +227,8 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 	public void caretUpdate(CaretEvent c) {
 		if (isClearing)
 			return;
-		if (getRow(replInputPane) < previousCaretLine)
-			replInputPane.setCaretPosition(previousCaretPosition);
+		if (getRow(replInputArea) < previousCaretLine)
+			replInputArea.setCaretPosition(previousCaretPosition);
 		else
 			previousCaretPosition = c.getDot();
 
@@ -243,7 +236,7 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		if (!replInputPane.hasFocus())
+		if (!replInputArea.hasFocus())
 			requestFocus();
 	}
 
@@ -257,5 +250,5 @@ public class REPLConsolePane extends JPanel implements KeyListener,
 	public void mousePressed(MouseEvent arg0) {}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {}
+	public void mouseReleased(MouseEvent arg0) {}*/
 }
