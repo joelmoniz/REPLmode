@@ -1,12 +1,32 @@
+Todo
+----
+
+UI
+==
 [ ] Get up and down to cycle through the commands
-[ ] Make things compatible with 3.0
-[ ] Add in simple drawing functions
-[ ] Add in miscellaneous command words specific to REPL Mode, such as clear, init x y (which serves as a replacement to size(x,y)), print (which maybe adds in all the code the user has executed from the last clear into an repl() function at the bottom of the current sketch)
-[ ] Add in more complex constructs, like variable declarations and loops
 [ ] Add colorization
 [ ] Update font as soon as user changes it in Preferences window
 
-Done
-====
+Build
+=====
+[ ] Make things compatible with 3.0
 
+Usage
+=====
+[ ] Add in simple drawing functions
+[ ] Add in miscellaneous command words specific to REPL Mode, such as clear, init x y (which serves as a replacement to size(x,y)), print (which maybe adds in all the code the user has executed from the last clear into an repl() function at the bottom of the current sketch)
+[ ] Add in more complex constructs, like variable declarations, ifs and loops
+
+Readme
+======
+[ ] Add build instructions
+[ ] Add usage instructions
+
+.....................................................................
+
+Done
+----
+
+UI
+==
 [X] Get the REPL prompt to have a, well, prompt-like feel
