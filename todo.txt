@@ -4,12 +4,9 @@ Todo
 UI
 ==
 [ ] Get up and down to cycle through the commands
+[ ] Give REPL Console focus when REPL tab is clicked
 [ ] Add colorization
 [ ] Update font as soon as user changes it in Preferences window
-
-Build
-=====
-[ ] Make things compatible with 3.0
 
 Usage
 =====
@@ -30,3 +27,7 @@ Done
 UI
 ==
 [X] Get the REPL prompt to have a, well, prompt-like feel
+
+Build
+=====
+[X] Make things compatible with 3.0
