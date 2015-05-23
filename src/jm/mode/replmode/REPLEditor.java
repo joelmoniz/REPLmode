@@ -1,12 +1,11 @@
 package jm.mode.replmode;
 
-import java.awt.BorderLayout;
 import java.awt.CardLayout;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import processing.app.Base;
+import processing.app.EditorFooter;
 import processing.app.EditorState;
 import processing.app.Mode;
 import processing.mode.java.JavaEditor;
@@ -54,10 +53,24 @@ public class REPLEditor extends JavaEditor {
 	protected REPLEditor(Base base, String path, EditorState state, Mode mode) {
 		super(base, path, state, mode);
 
-		replConsole = new REPLConsolePane(this);
-		addREPLConsoleUI();
+//		replConsole = new REPLConsolePane(this);
+//		addREPLConsoleUI();
 	}
 
+  /**
+   * Method to add a footer at the base of the editor with tabs to display the
+   * Console, Errors pane and the REPL Console.
+   */
+  @Override
+  public EditorFooter createFooter() {
+    replConsole = new REPLConsolePane(this);
+    
+    EditorFooter footer = super.createFooter();
+    footer.addPanel("REPL", replConsole);
+    return footer;
+  }
+	
+	/*
 	private void addREPLConsoleUI() {
 
 		// Adding toggle console button
@@ -100,6 +113,7 @@ public class REPLEditor extends JavaEditor {
 
 		showConsoleOrREPL(REPLConsoleToggle.CONSOLE);
 	}
+  */
 
 	public void showConsoleOrREPL(String buttonName) {
 		CardLayout cl = (CardLayout) consoleREPLPane.getLayout();
