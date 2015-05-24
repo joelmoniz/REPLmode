@@ -2,7 +2,6 @@ package jm.mode.replmode;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -86,7 +85,8 @@ public class CommandPromptPane extends NavigationFilter {
 
     public void actionPerformed(ActionEvent e) {
       JTextArea component = (JTextArea) e.getSource();
-      commandManager.insertCommand(getLastLine());
+      String command = getLastLine();
+      commandManager.insertCommand(command);
       shiftLine.actionPerformed(null);
       component.replaceSelection(prompt);
 //      System.out.println("Position: "+component.getCaretPosition());
@@ -110,43 +110,44 @@ public class CommandPromptPane extends NavigationFilter {
 
     public void actionPerformed(ActionEvent e) {
       String cycledCommand = "";
+      JTextArea component = (JTextArea) e.getSource();
+      String prevCommand = getLastLine();
       if (key.equals("up")) {
-        cycledCommand = commandManager.getPreviousCommand(getLastLine());
+        cycledCommand = commandManager.getPreviousCommand(prevCommand);
 //        System.out.println(getLastLine());
 //        System.out.println(commandManager.getPreviousCommand(getLastLine()));
       }
       else if (key.equals("down")) {
-        cycledCommand = commandManager.getNextCommand(getLastLine());
+        cycledCommand = commandManager.getNextCommand(prevCommand);
 //        System.out.println(getLastLine());
 //        System.out.println(commandManager.getNextCommand(getLastLine()));        
       }
-      JTextArea component = (JTextArea) e.getSource();
       component.select(component.getText().lastIndexOf(prompt) + prompt.length()
                        , component.getText().length());
       component.replaceSelection(cycledCommand);
     }
   }
 
-  class CommandKeyListener implements KeyListener {
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-      switch (e.getKeyCode()) {
-      case KeyEvent.VK_UP:
-        System.out.println("Here");
-        System.out.println(commandManager.getPreviousCommand(getLastLine()));
-      }
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-    }
-
-  }
+//  class CommandKeyListener implements KeyListener {
+//
+//    @Override
+//    public void keyTyped(KeyEvent e) {
+//      switch (e.getKeyCode()) {
+//      case KeyEvent.VK_UP:
+//        System.out.println("Here");
+//        System.out.println(commandManager.getPreviousCommand(getLastLine()));
+//      }
+//    }
+//
+//    @Override
+//    public void keyPressed(KeyEvent e) {
+//    }
+//
+//    @Override
+//    public void keyReleased(KeyEvent e) {
+//    }
+//
+//  }
   
   public String getLastLine() {
     // TODO: Is there a more efficient way of extracting the last line of code?

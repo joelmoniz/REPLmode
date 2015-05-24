@@ -63,6 +63,9 @@ public class CommandHistory {
       }
     }
     else {
+      if (currentCycleCommand == commandList.size() - 1) {
+        this.currentCommand = currCommand;
+      }
       return commandList.get(currentCycleCommand);
     }
   }
@@ -75,6 +78,9 @@ public class CommandHistory {
         return "";
       }
       else {
+        if (currentCycleCommand > commandList.size()) {
+          this.currentCommand = currCommand;
+        }
         // avoid multiple down-arrow pressing after reaching 
         // bottom of list from causing problems
         currentCycleCommand = commandList.size();
@@ -98,7 +104,10 @@ public class CommandHistory {
   
   public void insertCommand(String cmd) {
     resetCommandCycle();
-    commandList.add(cmd);
+    
+    if (cmd != null && !cmd.isEmpty()) {
+      commandList.add(cmd);
+    }    
     
     if (cmd.equals(CLEAR_COMMAND)) {
       previousClearLine = commandList.size();
