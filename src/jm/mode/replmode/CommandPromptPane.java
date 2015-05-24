@@ -8,6 +8,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.NavigationFilter;
 import javax.swing.text.Position;
@@ -28,22 +29,31 @@ public class CommandPromptPane extends NavigationFilter {
   private Action shiftLine;
 
   JTextArea consoleArea;
+  CommandHistory commandManager;
 
   String prompt;
 
   int rowStartPosition;
 
-  public CommandPromptPane(String prompt, JTextArea component) {
+  public CommandPromptPane(String prompt, JTextArea component, CommandHistory cmdManager) {
     consoleArea = component;
+    commandManager = cmdManager;
     this.prompt = prompt;
     this.prefixLength = prompt.length();
     rowStartPosition = 0;
 
+    // TODO: Check these next 4 lines out. Refactor later if necessary.
     deletePrevious = component.getActionMap().get("delete-previous");
     shiftLine = component.getActionMap().get("insert-break");
     component.getActionMap().put("delete-previous", new BackspaceAction());
     component.getActionMap().put("insert-break", new EnterAction());
-    component.addKeyListener(new CommandKeyListener());
+
+    component.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "up");
+    component.getActionMap().put("up", new KeyAction("up"));
+    component.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "down");
+    component.getActionMap().put("down", new KeyAction("down"));
+    
+//    component.addKeyListener(new CommandKeyListener());
     component.setCaretPosition(prefixLength);
 //    component.setWrapStyleWord(true);
     component.setLineWrap(true);
@@ -76,6 +86,7 @@ public class CommandPromptPane extends NavigationFilter {
 
     public void actionPerformed(ActionEvent e) {
       JTextArea component = (JTextArea) e.getSource();
+      commandManager.insertCommand(getLastLine());
       shiftLine.actionPerformed(null);
       component.replaceSelection(prompt);
 //      System.out.println("Position: "+component.getCaretPosition());
@@ -88,13 +99,42 @@ public class CommandPromptPane extends NavigationFilter {
     }
   }
 
+  class KeyAction extends AbstractAction {
+
+    private static final long serialVersionUID = 3382543935199626852L;
+    private String key;
+    
+    public KeyAction(String string) {
+      key = string;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      String cycledCommand = "";
+      if (key.equals("up")) {
+        cycledCommand = commandManager.getPreviousCommand(getLastLine());
+//        System.out.println(getLastLine());
+//        System.out.println(commandManager.getPreviousCommand(getLastLine()));
+      }
+      else if (key.equals("down")) {
+        cycledCommand = commandManager.getNextCommand(getLastLine());
+//        System.out.println(getLastLine());
+//        System.out.println(commandManager.getNextCommand(getLastLine()));        
+      }
+      JTextArea component = (JTextArea) e.getSource();
+      component.select(component.getText().lastIndexOf(prompt) + prompt.length()
+                       , component.getText().length());
+      component.replaceSelection(cycledCommand);
+    }
+  }
+
   class CommandKeyListener implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
       switch (e.getKeyCode()) {
       case KeyEvent.VK_UP:
-        ; // TODO: Bring previous line's code here
+        System.out.println("Here");
+        System.out.println(commandManager.getPreviousCommand(getLastLine()));
       }
     }
 
@@ -106,6 +146,13 @@ public class CommandPromptPane extends NavigationFilter {
     public void keyReleased(KeyEvent e) {
     }
 
+  }
+  
+  public String getLastLine() {
+    // TODO: Is there a more efficient way of extracting the last line of code?
+    int lineStartLocation = consoleArea.getText().lastIndexOf(prompt) 
+        + prompt.length();
+    return consoleArea.getText().substring(lineStartLocation);
   }
 
   // Refer : http://stackoverflow.com/a/2750099/2427542
@@ -160,7 +207,8 @@ public class CommandPromptPane extends NavigationFilter {
   public static void main(String args[]) throws Exception {
 
     JTextArea textField = new JTextArea(">> ", 20, 40);
-    textField.setNavigationFilter(new CommandPromptPane(">> ", textField));
+    CommandHistory cmd = new CommandHistory();
+    textField.setNavigationFilter(new CommandPromptPane(">> ", textField, cmd));
 
     JFrame frame = new JFrame("Navigation Filter Example");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

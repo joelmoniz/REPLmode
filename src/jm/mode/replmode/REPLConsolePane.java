@@ -32,14 +32,16 @@ public class REPLConsolePane extends JPanel {
 
   protected JScrollPane replScrollPane;
   protected JTextArea replInputArea;
+  protected CommandHistory command;
   protected CommandPromptPane replInputPaneFilter;
 
   public REPLConsolePane(Editor editor) {
 
     replInputArea = new JTextArea(PROMPT);
+    command = new CommandHistory();
     
     // Set navigation filter
-    replInputPaneFilter = new CommandPromptPane(PROMPT, replInputArea);
+    replInputPaneFilter = new CommandPromptPane(PROMPT, replInputArea, command);
     replInputArea.setNavigationFilter(replInputPaneFilter);
 
     // Appearance-related
