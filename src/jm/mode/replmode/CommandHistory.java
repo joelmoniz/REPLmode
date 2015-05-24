@@ -53,6 +53,7 @@ public class CommandHistory {
       else if (currentCycleCommand == UNDEFINED_COMMAND_STEP - 1) {
         currentCycleCommand = commandList.size() - 1;
         this.currentCommand = currCommand;
+//        System.out.println(commandList.get(currentCycleCommand));
         return commandList.get(currentCycleCommand);
       }
       else {

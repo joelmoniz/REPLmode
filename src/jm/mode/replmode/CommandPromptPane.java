@@ -90,6 +90,13 @@ public class CommandPromptPane extends NavigationFilter {
       shiftLine.actionPerformed(null);
       component.replaceSelection(prompt);
 //      System.out.println("Position: "+component.getCaretPosition());
+      if (command.equals(CommandHistory.CLEAR_COMMAND)) {
+        // TODO: Or is selecting everything and then using replaceSelection() better?
+//        component.select(0, component.getText().length());
+//        component.replaceSelection(prompt);
+        
+         component.setText(prompt);
+      }
       try {
         rowStartPosition = Math.max(rowStartPosition, Utilities
             .getRowStart(consoleArea, consoleArea.getCaretPosition()));
@@ -122,9 +129,18 @@ public class CommandPromptPane extends NavigationFilter {
 //        System.out.println(getLastLine());
 //        System.out.println(commandManager.getNextCommand(getLastLine()));        
       }
-      component.select(component.getText().lastIndexOf(prompt) + prompt.length()
-                       , component.getText().length());
-      component.replaceSelection(cycledCommand);
+//      System.out.println(cycledCommand);
+//      System.out.println(component.getText().lastIndexOf(prompt) + prompt.length()
+//                       + " to " + component.getText().length() + " with " + cycledCommand);
+//      component.select(component.getText().lastIndexOf(prompt) + prompt.length()
+//                       , component.getText().length());
+//      component.requestFocus();
+//      component.setCaretPosition(component.getText().lastIndexOf(prompt) + prompt.length());
+//      component.moveCaretPosition(component.getText().length());
+//      component.replaceSelection(cycledCommand);
+      component.replaceRange(cycledCommand, 
+                             component.getText().lastIndexOf(prompt) + prompt.length(), 
+                             component.getText().length());
     }
   }
 
