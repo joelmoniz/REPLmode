@@ -31,14 +31,20 @@ public class CommandPromptPane extends NavigationFilter {
   CommandHistory commandManager;
 
   String prompt;
+  String promptContinuation;
 
+  boolean isContinuing;
+  int openLeftCurlies;
   int rowStartPosition;
 
-  public CommandPromptPane(String prompt, JTextArea component, CommandHistory cmdManager) {
+  public CommandPromptPane(String prompt, String promptContinuation, JTextArea component, CommandHistory cmdManager) {
     consoleArea = component;
     commandManager = cmdManager;
     this.prompt = prompt;
+    this.promptContinuation = promptContinuation;
     this.prefixLength = prompt.length();
+    isContinuing = false;
+    openLeftCurlies = 0;
     rowStartPosition = 0;
 
     // TODO: Check these next 4 lines out. Refactor later if necessary.
@@ -86,9 +92,9 @@ public class CommandPromptPane extends NavigationFilter {
     public void actionPerformed(ActionEvent e) {
       JTextArea component = (JTextArea) e.getSource();
       String command = getLastLine();
+      String trimmedCommand = command.trim();
       commandManager.insertCommand(command);
       shiftLine.actionPerformed(null);
-      component.replaceSelection(prompt);
 //      System.out.println("Position: "+component.getCaretPosition());
       if (command.equals(CommandHistory.CLEAR_COMMAND)) {
         // TODO: Or is selecting everything and then using replaceSelection() better?
@@ -96,7 +102,43 @@ public class CommandPromptPane extends NavigationFilter {
 //        component.replaceSelection(prompt);
         
          component.setText(prompt);
+         prefixLength = promptContinuation.length();
+         openLeftCurlies = 0;
+         isContinuing = false;
       }
+      else if (isContinuing || trimmedCommand.endsWith("{") || trimmedCommand.endsWith(",")) {
+        if (trimmedCommand.endsWith("}") || trimmedCommand.endsWith(";")) {
+          
+          if (trimmedCommand.endsWith("}")) {
+            openLeftCurlies--;
+          }
+            
+          if (openLeftCurlies == 0) {
+            component.replaceSelection(prompt);
+            prefixLength = prompt.length();
+            isContinuing = false;
+          }
+          else {
+            component.replaceSelection(promptContinuation);
+            prefixLength = promptContinuation.length();
+            isContinuing = true;
+          }
+        }
+        else {
+          component.replaceSelection(promptContinuation);
+          prefixLength = promptContinuation.length();
+          isContinuing = true;
+          
+          if (trimmedCommand.endsWith("{")) {
+            openLeftCurlies++;
+          }
+        }
+      }
+      else {
+        component.replaceSelection(prompt);
+        prefixLength = prompt.length();
+      }
+      
       try {
         rowStartPosition = Math.max(rowStartPosition, Utilities
             .getRowStart(consoleArea, consoleArea.getCaretPosition()));
@@ -138,9 +180,18 @@ public class CommandPromptPane extends NavigationFilter {
 //      component.setCaretPosition(component.getText().lastIndexOf(prompt) + prompt.length());
 //      component.moveCaretPosition(component.getText().length());
 //      component.replaceSelection(cycledCommand);
+      
+      if (isContinuing) {
+        component.replaceRange(cycledCommand, 
+                               component.getText().lastIndexOf(promptContinuation) + 
+                               promptContinuation.length(), 
+                               component.getText().length());
+      }
+      else {
       component.replaceRange(cycledCommand, 
                              component.getText().lastIndexOf(prompt) + prompt.length(), 
                              component.getText().length());
+      }
     }
   }
 
@@ -167,8 +218,15 @@ public class CommandPromptPane extends NavigationFilter {
   
   public String getLastLine() {
     // TODO: Is there a more efficient way of extracting the last line of code?
-    int lineStartLocation = consoleArea.getText().lastIndexOf(prompt) 
+    int lineStartLocation;
+    if (isContinuing) {
+      lineStartLocation = consoleArea.getText().lastIndexOf(promptContinuation) 
+          + promptContinuation.length();
+    }
+    else {
+      lineStartLocation = consoleArea.getText().lastIndexOf(prompt) 
         + prompt.length();
+    }
     return consoleArea.getText().substring(lineStartLocation);
   }
 
@@ -225,7 +283,7 @@ public class CommandPromptPane extends NavigationFilter {
 
     JTextArea textField = new JTextArea(">> ", 20, 40);
     CommandHistory cmd = new CommandHistory();
-    textField.setNavigationFilter(new CommandPromptPane(">> ", textField, cmd));
+    textField.setNavigationFilter(new CommandPromptPane(">> ", "...  ", textField, cmd));
 
     JFrame frame = new JFrame("Navigation Filter Example");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

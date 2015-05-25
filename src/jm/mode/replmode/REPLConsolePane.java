@@ -29,6 +29,7 @@ public class REPLConsolePane extends JPanel {
   private static final long serialVersionUID = -7546489577830751456L;
 
   private static final String PROMPT = ">> ";
+  private static final String PROMPT_CONTINUATION = "…    ";
 
   protected JScrollPane replScrollPane;
   protected JTextArea replInputArea;
@@ -41,7 +42,7 @@ public class REPLConsolePane extends JPanel {
     command = new CommandHistory();
     
     // Set navigation filter
-    replInputPaneFilter = new CommandPromptPane(PROMPT, replInputArea, command);
+    replInputPaneFilter = new CommandPromptPane(PROMPT, PROMPT_CONTINUATION, replInputArea, command);
     replInputArea.setNavigationFilter(replInputPaneFilter);
 
     // Appearance-related
