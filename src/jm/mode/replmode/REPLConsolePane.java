@@ -67,7 +67,7 @@ public class REPLConsolePane extends JPanel {
    * selected
    */
   public void requestFocus() {
-    replInputArea.grabFocus();
+    replInputArea.requestFocusInWindow();
   }
 
   protected void clear() {

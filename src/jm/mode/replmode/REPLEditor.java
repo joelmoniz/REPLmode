@@ -1,6 +1,8 @@
 package jm.mode.replmode;
 
 import java.awt.CardLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.JPanel;
 
@@ -67,9 +69,16 @@ public class REPLEditor extends JavaEditor {
     
     EditorFooter footer = super.createFooter();
     footer.addPanel("REPL", replConsole);
+
+    replConsole.addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentShown(ComponentEvent e) {
+          replConsole.requestFocus();
+        }
+      });
+
     return footer;
   }
-	
 	/*
 	private void addREPLConsoleUI() {
 
