@@ -3,6 +3,8 @@ package jm.mode.replmode;
 import java.awt.CardLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JPanel;
 
@@ -10,6 +12,7 @@ import processing.app.Base;
 import processing.app.EditorFooter;
 import processing.app.EditorState;
 import processing.app.Mode;
+import processing.app.Sketch;
 import processing.mode.java.JavaEditor;
 
 /**
@@ -51,9 +54,42 @@ public class REPLEditor extends JavaEditor {
 	 * Clear REPL/Console panes button
 	 */
 	protected ConsoleButtons consoleOptions;
+	
+	protected Sketch replTempSketch;
+	protected File untitledFolderLocation;
 
 	protected REPLEditor(Base base, String path, EditorState state, Mode mode) {
 		super(base, path, state, mode);
+		
+		try {
+      untitledFolderLocation = Base.createTempFolder("untitled", "repl", null);
+      
+//      final String temp = path.substring(path.substring(0, path.lastIndexOf('\\'))
+//      .lastIndexOf('\\'), path.lastIndexOf('\\')+1);
+      final File tempFile = File.createTempFile("tmp", ".repl", untitledFolderLocation);
+      replTempSketch = new Sketch(tempFile.getAbsolutePath(), this);
+      
+      Thread one = new Thread() {
+        public void run() {
+          try {
+            Thread.sleep(2000);
+            System.out.println(sketch.getFolder());
+            System.out.println(tempFile.getAbsolutePath());
+            System.out.println(sketch.getCode(0).getFileName());
+            System.out.println(replTempSketch.getCodeFolder().getAbsolutePath());
+            System.out.println(replTempSketch.getCodeCount());
+//            for (String f : replTempSketch.getCodeFolder().list()) {
+//              System.out.println(f);
+//            }
+          } catch (InterruptedException v) {
+            System.out.println(v);
+          }
+        }
+      };
+      one.start();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
 //		replConsole = new REPLConsolePane(this);
 //		addREPLConsoleUI();
