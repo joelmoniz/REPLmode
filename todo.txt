@@ -3,21 +3,30 @@ Todo
 
 UI
 ==
-[ ] Get up and down to cycle through the commands
-[ ] Give REPL Console focus when REPL tab is clicked
 [ ] Add colorization
 [ ] Update font as soon as user changes it in Preferences window
 
 Usage
 =====
 [ ] Add in simple drawing functions
-[ ] Add in miscellaneous command words specific to REPL Mode, such as clear, init x y (which serves as a replacement to size(x,y)), print (which maybe adds in all the code the user has executed from the last clear into an repl() function at the bottom of the current sketch)
+[ ] Add in miscellaneous command words specific to REPL Mode:
+        [ ] clear
+        [ ] init x y (which serves as a replacement to size(x,y))
+	[ ] undo x (undo the last x non-undo/redo statements)
+	[ ] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo
+        [ ] print (adds all correct commands executed from the last clear into an repl() function at 
+            the bottom of the current sketch)
 [ ] Add in more complex constructs, like variable declarations, ifs and loops
 
 Readme
 ======
 [ ] Add build instructions
 [ ] Add usage instructions
+
+Code Style
+==========
+[ ] Check out how enter and delete keys are handled in CommandPromptPane class
+[ ] Check out where best to handle the `clear` command actually clearing the console
 
 .....................................................................
 
@@ -26,6 +35,9 @@ Done
 
 UI
 ==
+[X] Get up and down to cycle through the commands
+[X] Replace ">> " with "...  " when user enters an incomplete command (Eg: With a '{' or ',' at the end)
+[X] Give REPL Console focus when REPL tab is clicked
 [X] Get the REPL prompt to have a, well, prompt-like feel
 
 Build
