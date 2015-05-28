@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.osgi.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.text.jar"/>
 	<classpathentry kind="lib" path="lib/org.netbeans.swing.outline.jar"/>
+	<classpathentry kind="lib" path="lib/ecj.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

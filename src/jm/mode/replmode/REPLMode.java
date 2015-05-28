@@ -49,9 +49,10 @@ public class REPLMode extends JavaMode {
 	/**
 	 * Returns a String[] array of proper extensions.
 	 */
-	/*
-	 * @Override public String[] getExtensions() { return null; }
-	 */
+	@Override
+  public String[] getExtensions() {
+    return new String[] { "pde", "java", "repl" };
+  }
 
 	/**
 	 * Get array of file/directory names that needn't be copied during "Save

@@ -12,8 +12,13 @@ import processing.app.Base;
 import processing.app.EditorFooter;
 import processing.app.EditorState;
 import processing.app.Mode;
+import processing.app.Preferences;
+import processing.app.RunnerListener;
 import processing.app.Sketch;
+import processing.app.SketchException;
+import processing.mode.java.JavaBuild;
 import processing.mode.java.JavaEditor;
+import processing.mode.java.runner.Runner;
 
 /**
  * Main View Class. Handles the editor window including tool bar and menu. Has
@@ -57,32 +62,48 @@ public class REPLEditor extends JavaEditor {
 	
 	protected Sketch replTempSketch;
 	protected File untitledFolderLocation;
+	
+	Runner replRuntime;
+	REPLMode replMode;
 
 	protected REPLEditor(Base base, String path, EditorState state, Mode mode) {
 		super(base, path, state, mode);
 		
+		replMode = (REPLMode)mode;
+		
 		try {
       untitledFolderLocation = Base.createTempFolder("untitled", "repl", null);
       
+      (new File(untitledFolderLocation, sketch.getFolder().getName())).mkdirs();
+      File subdir = new File(untitledFolderLocation, sketch.getFolder().getName());
+      
 //      final String temp = path.substring(path.substring(0, path.lastIndexOf('\\'))
 //      .lastIndexOf('\\'), path.lastIndexOf('\\')+1);
-      final File tempFile = File.createTempFile("tmp", ".repl", untitledFolderLocation);
+      final File tempFile = File.createTempFile("tmp", ".pde", subdir);
       replTempSketch = new Sketch(tempFile.getAbsolutePath(), this);
       
       Thread one = new Thread() {
         public void run() {
           try {
-            Thread.sleep(2000);
-            System.out.println(sketch.getFolder());
+            Thread.sleep(5000);
+            System.out.println("Here");
+            System.out.println(sketch.getFolder().getName());
+            System.out.println(replTempSketch.getFolder().getName());
             System.out.println(tempFile.getAbsolutePath());
-            System.out.println(sketch.getCode(0).getFileName());
+            System.out.println(sketch.getCodeFolder().getAbsolutePath());
             System.out.println(replTempSketch.getCodeFolder().getAbsolutePath());
+            System.out.println(sketch.getCodeCount());
             System.out.println(replTempSketch.getCodeCount());
+            prepareInitialREPLRun();
+            handleREPLRun();
+            
 //            for (String f : replTempSketch.getCodeFolder().list()) {
 //              System.out.println(f);
 //            }
           } catch (InterruptedException v) {
             System.out.println(v);
+          } catch (NullPointerException v) {
+            v.printStackTrace();
           }
         }
       };
@@ -167,4 +188,59 @@ public class REPLEditor extends JavaEditor {
 			replConsole.requestFocus();
 	}
 
+
+  public void prepareInitialREPLRun() {
+    internalCloseRunner();
+    statusEmpty();
+
+    // do this to advance/clear the terminal window / dos prompt / etc
+    for (int i = 0; i < 10; i++) System.out.println();
+
+    // clear the console on each run, unless the user doesn't want to
+    if (Preferences.getBoolean("console.auto_clear")) {
+      console.clear();
+    }
+
+    // make sure any edits have been stored
+    //current.setProgram(editor.getText());
+    String tempTestCode = "void setup() { size(200, 200);}  \nvoid draw() {rect(20, 20, 80, 80);}";
+    replTempSketch.getCurrentCode().setProgram(tempTestCode);
+  }
+  
+  public void handleREPLRun() {
+      new Thread(new Runnable() {
+        public void run() {
+          prepareRun();
+          try {
+            toolbar.activateRun();
+            replRuntime = handleREPLRun(replTempSketch, REPLEditor.this);
+          } catch (Exception e) {
+            statusError(e);
+          }
+        }
+      }).start();
+  }
+  
+  public Runner handleREPLRun(Sketch sketch,
+                          RunnerListener listener) throws SketchException {
+    return handleLaunch(sketch, listener, false);
+  }
+  
+  /** Handles the standard Java "Run" or "Present" */
+  public Runner handleLaunch(Sketch sketch, RunnerListener listener,
+                             final boolean present) throws SketchException {
+    JavaBuild build = new JavaBuild(sketch);
+    String appletClassName = build.build(false);
+    if (appletClassName != null) {
+      final Runner runtime = new Runner(build, listener);
+      new Thread(new Runnable() {
+        public void run() {
+          runtime.launch(present);  // this blocks until finished
+        }
+      }).start();
+      return runtime;
+    }
+    return null;
+  }
+	
 }
