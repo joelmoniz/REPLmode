@@ -13,8 +13,9 @@
     <property name="java.target.version" value="1.7" />
 
     <!-- location of processing jars (core.jar, pde.jar, ..) -->
-    <property name="processing.classes.core" location="./lib" />
-    <property name="processing.classes.pde" location="./lib" />
+    <property name="processing.classes.core" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\core\\library" />
+    <property name="processing.classes.pde" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\lib" />
+    <property name="processing.classes.javamode" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\modes\\java\\mode" />
     
     <!-- folder to install modes in (probably a folder called "modes" inside your sketchbook folder) -->
     <property name="processing.modes" location="${user.home}/Documents/Processing/modes"/>
@@ -39,6 +40,10 @@
         <fileset dir="${processing.classes.pde}" >
             <include name="*.jar" />
         </fileset>
+        
+        <fileset dir="${processing.classes.javamode}" >
+            <include name="JavaMode.jar" />
+        </fileset>
 
         <fileset dir="lib" >
             <include name="*.jar" />
@@ -59,6 +64,8 @@
                 <path refid="library-classpath"/>
             </classpath>
         </javac>
+    	<pathconvert property="classpathProp" refid="library-classpath"/>
+    	<echo>Classpath is ${classpathProp}</echo>
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - -

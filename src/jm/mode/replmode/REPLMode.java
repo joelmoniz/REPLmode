@@ -69,11 +69,37 @@ public class REPLMode extends JavaMode {
 	 */
 	@Override
 	public ClassLoader getClassLoader() {
-		for (Mode m : base.getModeList()) {
-			if (m.getClass() == JavaMode.class) {
+		for (final Mode m : base.getModeList()) {
+			if (m.getClass().getName().equals(JavaMode.class.getName())) {
 				JavaMode jMode = (JavaMode) m;
+	      Thread t3 = new Thread(new Runnable() {
+	        
+	        @Override
+	        public void run() {
+	          try {
+	            Thread.sleep(9000);
+	          } catch (InterruptedException e) {
+	            e.printStackTrace();
+	          }
+	          System.out.println("In the if!! : " + m.getClass().getName());
+	        }
+	      });
+	      t3.start();
 				return jMode.getClassLoader();
 			}
+      Thread t3 = new Thread(new Runnable() {
+        
+        @Override
+        public void run() {
+          try {
+            Thread.sleep(9000);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+          System.out.println("In classloader: " + m.getClass().getName() + " vs " + JavaMode.class.getName());
+        }
+      });
+      t3.start();
 		}
 		return null; // badness
 	}

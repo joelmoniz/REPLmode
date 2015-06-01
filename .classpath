@@ -2,9 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="lib/core.jar"/>
-	<classpathentry kind="lib" path="lib/pde.jar"/>
-	<classpathentry kind="lib" path="lib/JavaMode.jar"/>
 	<classpathentry kind="lib" path="lib/antlr.jar"/>
 	<classpathentry kind="lib" path="lib/classpath-explorer-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/com.ibm.icu.jar"/>
@@ -22,5 +19,9 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.osgi.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.text.jar"/>
 	<classpathentry kind="lib" path="lib/org.netbeans.swing.outline.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joel/Documents/Code/p5/processing/build/windows/work/lib/pde.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joel/Documents/Code/p5/processing/build/windows/work/core/library/core.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joel/Documents/Code/p5/processing/build/windows/work/modes/java/mode/JavaMode.jar"/>
+	<classpathentry kind="lib" path="lib/ecj.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
