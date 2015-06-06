@@ -29,6 +29,7 @@ public class CommandPromptPane extends NavigationFilter {
 
   JTextArea consoleArea;
   CommandHistory commandManager;
+  REPLEditor replEditor;
 
   String prompt;
   String promptContinuation;
@@ -37,9 +38,10 @@ public class CommandPromptPane extends NavigationFilter {
   int openLeftCurlies;
   int rowStartPosition;
 
-  public CommandPromptPane(String prompt, String promptContinuation, JTextArea component, CommandHistory cmdManager) {
+  public CommandPromptPane(String prompt, String promptContinuation, REPLEditor editor, JTextArea component, CommandHistory cmdManager) {
     consoleArea = component;
     commandManager = cmdManager;
+    replEditor = editor;
     this.prompt = prompt;
     this.promptContinuation = promptContinuation;
     this.prefixLength = prompt.length();
@@ -137,6 +139,10 @@ public class CommandPromptPane extends NavigationFilter {
       else {
         component.replaceSelection(prompt);
         prefixLength = prompt.length();
+        
+        if (replEditor != null) {
+          replEditor.runREPL(commandManager.toSketch());
+        }
       }
       
       try {
@@ -283,7 +289,7 @@ public class CommandPromptPane extends NavigationFilter {
 
     JTextArea textField = new JTextArea(">> ", 20, 40);
     CommandHistory cmd = new CommandHistory();
-    textField.setNavigationFilter(new CommandPromptPane(">> ", "...  ", textField, cmd));
+    textField.setNavigationFilter(new CommandPromptPane(">> ", "...  ", null, textField, cmd));
 
     JFrame frame = new JFrame("Navigation Filter Example");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

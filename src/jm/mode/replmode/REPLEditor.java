@@ -82,32 +82,35 @@ public class REPLEditor extends JavaEditor {
       final File tempFile = File.createTempFile("tmp", ".pde", subdir);
       replTempSketch = new Sketch(tempFile.getAbsolutePath(), this);
       
-      Thread one = new Thread() {
-        public void run() {
-          try {
-            Thread.sleep(5000);
-            System.out.println("Here");
-            System.out.println(sketch.getFolder().getName());
-            System.out.println(replTempSketch.getFolder().getName());
-            System.out.println(tempFile.getAbsolutePath());
-            System.out.println(sketch.getCodeFolder().getAbsolutePath());
-            System.out.println(replTempSketch.getCodeFolder().getAbsolutePath());
-            System.out.println(sketch.getCodeCount());
-            System.out.println(replTempSketch.getCodeCount());
-            prepareInitialREPLRun();
-            handleREPLRun();
-            
-//            for (String f : replTempSketch.getCodeFolder().list()) {
-//              System.out.println(f);
-//            }
-          } catch (InterruptedException v) {
-            System.out.println(v);
-          } catch (NullPointerException v) {
-            v.printStackTrace();
-          }
-        }
-      };
-      one.start();
+//      Thread one = new Thread() {
+//        public void run() {
+//          try {
+//            Thread.sleep(7000);
+//            System.out.println("Here");
+//            System.out.println(sketch.getFolder().getName());
+//            System.out.println(replTempSketch.getFolder().getName());
+//            System.out.println(tempFile.getAbsolutePath());
+//            System.out.println(sketch.getCodeFolder().getAbsolutePath());
+//            System.out.println(replTempSketch.getCodeFolder().getAbsolutePath());
+//            System.out.println(sketch.getCodeCount());
+//            System.out.println(replTempSketch.getCodeCount());
+//            prepareInitialREPLRun();
+//            handleREPLRun();
+//            Thread.sleep(5000);
+//            prepareInitialREPLRun2();
+//            handleREPLRun();
+//            
+////            for (String f : replTempSketch.getCodeFolder().list()) {
+////              System.out.println(f);
+////            }
+//          } catch (InterruptedException v) {
+//            System.out.println(v);
+//          } catch (NullPointerException v) {
+//            v.printStackTrace();
+//          }
+//        }
+//      };
+//      one.start();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -187,10 +190,20 @@ public class REPLEditor extends JavaEditor {
 		if (REPLConsoleToggle.REPL.equals(buttonName))
 			replConsole.requestFocus();
 	}
+	
+	public void runREPL(String code) {
+    prepareInitialREPLRun(code);
+    handleREPLRun();
+	}
 
-
+	/**
+	 * Test method to prototype a prepare run method for the REPL Mode. 
+	 * <br /><b>Warning:</b> Prototype test method only. Pointless 
+	 * in the real world.
+	 */
   public void prepareInitialREPLRun() {
-    internalCloseRunner();
+    handleREPLStop();
+//    internalCloseRunner();
     statusEmpty();
 
     // do this to advance/clear the terminal window / dos prompt / etc
@@ -207,12 +220,46 @@ public class REPLEditor extends JavaEditor {
     replTempSketch.getCurrentCode().setProgram(tempTestCode);
   }
   
-  public void handleREPLRun() {
+  public void prepareInitialREPLRun2() {
+    handleREPLStop();
+//    internalCloseRunner();
+    statusEmpty();
+
+    // do this to advance/clear the terminal window / dos prompt / etc
+    for (int i = 0; i < 10; i++) System.out.println("");
+
+    // clear the console on each run, unless the user doesn't want to
+    if (Preferences.getBoolean("console.auto_clear")) {
+      console.clear();
+    }
+
+    // make sure any edits have been stored
+    //current.setProgram(editor.getText());
+    String tempTestCode = "void setup() { size(200, 200);}  \nvoid draw() {rect(20, 20, 80, 80);rect(20, 20, 40, 120);}";
+    replTempSketch.getCurrentCode().setProgram(tempTestCode);
+  }
+  
+  protected void prepareInitialREPLRun(String replCode) {
+    handleREPLStop();
+//    internalCloseRunner();
+    statusEmpty();
+
+    // do this to advance/clear the terminal window / dos prompt / etc
+    for (int i = 0; i < 10; i++) System.out.println("");
+
+    // clear the console on each run, unless the user doesn't want to
+    if (Preferences.getBoolean("console.auto_clear")) {
+      console.clear();
+    }
+
+    replTempSketch.getCurrentCode().setProgram(replCode);
+  }
+  
+  protected void handleREPLRun() {
       new Thread(new Runnable() {
         public void run() {
           prepareRun();
           try {
-            toolbar.activateRun();
             replRuntime = handleREPLRun(replTempSketch, REPLEditor.this);
           } catch (Exception e) {
             statusError(e);
@@ -243,4 +290,21 @@ public class REPLEditor extends JavaEditor {
     return null;
   }
 	
+  /**
+   * Event handler called when hitting the stop button. Stops a running debug
+   * session or performs standard stop action if not currently debugging.
+   */
+  public void handleREPLStop() {
+//      toolbar.activate(JavaToolbar.STOP);
+
+    try {
+      if (replRuntime != null) {
+        replRuntime.close(); // kills the window
+        replRuntime = null;
+      }
+    } catch (Exception e) {
+      statusError(e);
+    }
+  }
+
 }

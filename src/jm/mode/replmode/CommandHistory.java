@@ -37,7 +37,7 @@ public class CommandHistory {
   
   public CommandHistory() {
     currentCycleCommand = UNDEFINED_COMMAND_STEP;
-    previousClearLine = -1;
+    previousClearLine = 0;
     currentCommand = "";
     
     commandList = new ArrayList<>();
@@ -127,5 +127,13 @@ public class CommandHistory {
     }
     
     return cmdList.toString();
+  }
+  
+  public String toSketch() {
+    StringBuilder sketchCode = new StringBuilder();
+    sketchCode.append("void setup() {\n");
+    sketchCode.append(extractCommandBlock());
+    sketchCode.append("\n}\n\nvoid draw() {}");
+    return sketchCode.toString();
   }
 }
