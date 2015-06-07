@@ -3,6 +3,9 @@ Todo
 
 UI
 ==
+[ ] Get enter key to run whole command, not break it up
+[ ] Close REPL sketch when PDE is closed
+[ ] Give REPL Mode focus, not skecth, when sketch is run
 [ ] Add colorization
 [ ] Update font as soon as user changes it in Preferences window
 
@@ -11,12 +14,25 @@ Usage
 [ ] Add in simple drawing functions
 [ ] Add in miscellaneous command words specific to REPL Mode:
         [ ] clear
+        	[ ] Ensure that init properties are copied over when clear is done
         [ ] init x y (which serves as a replacement to size(x,y))
+        	[ ] prevent size() from being called directly
+        	[ ] allow init to be called again, the only change being that size of sketch is different
 	[ ] undo x (undo the last x non-undo/redo statements)
 	[ ] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo
         [ ] print (adds all correct commands executed from the last clear into an repl() function at 
             the bottom of the current sketch)
 [ ] Add in more complex constructs, like variable declarations, ifs and loops
+
+Bugs
+====
+[ ] Uncaught exceptions (probably, even hopefully) run amok
+[ ] REPL sketch sometimes just doesn't open
+
+Internals
+=========
+[ ] Have errors checked line-by-line
+[ ] Hot-swap without re-opening new sketches
 
 Readme
 ======
