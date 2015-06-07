@@ -93,6 +93,7 @@ public class CommandPromptPane extends NavigationFilter {
 
     public void actionPerformed(ActionEvent e) {
       JTextArea component = (JTextArea) e.getSource();
+      component.setCaretPosition(component.getText().length());
       String command = getLastLine();
       String trimmedCommand = command.trim();
       commandManager.insertCommand(command);
