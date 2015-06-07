@@ -141,7 +141,7 @@ public class CommandPromptPane extends NavigationFilter {
         prefixLength = prompt.length();
         
         if (replEditor != null) {
-          replEditor.runREPL(commandManager.toSketch());
+          replEditor.handleREPLRun(commandManager.toSketch());
         }
       }
       

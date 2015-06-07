@@ -191,10 +191,10 @@ public class REPLEditor extends JavaEditor {
 			replConsole.requestFocus();
 	}
 	
-	public void runREPL(String code) {
-    prepareInitialREPLRun(code);
-    handleREPLRun();
-	}
+//	public void runREPL(String code) {
+//    prepareInitialREPLRun(code);
+//    handleREPLRun();
+//	}
 
 	/**
 	 * Test method to prototype a prepare run method for the REPL Mode. 
@@ -255,10 +255,11 @@ public class REPLEditor extends JavaEditor {
     replTempSketch.getCurrentCode().setProgram(replCode);
   }
   
-  protected void handleREPLRun() {
+  public void handleREPLRun(String code) {
       new Thread(new Runnable() {
         public void run() {
-          prepareRun();
+          // TODO: Check how this is to be called, and where
+          prepareInitialREPLRun(code);
           try {
             replRuntime = handleREPLRun(replTempSketch, REPLEditor.this);
           } catch (Exception e) {
@@ -283,6 +284,7 @@ public class REPLEditor extends JavaEditor {
       new Thread(new Runnable() {
         public void run() {
           runtime.launch(present);  // this blocks until finished
+//          replConsole.requestFocus();
         }
       }).start();
       return runtime;
@@ -305,6 +307,12 @@ public class REPLEditor extends JavaEditor {
     } catch (Exception e) {
       statusError(e);
     }
+  }
+
+  @Override
+  public void internalCloseRunner() {
+    super.internalCloseRunner();
+    handleREPLStop();
   }
 
 }
