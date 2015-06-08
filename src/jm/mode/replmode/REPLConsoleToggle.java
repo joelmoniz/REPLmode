@@ -11,7 +11,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 /**
- * Toggle Button displayed in the editor line status panel for toggling bewtween
+ * Toggle Button displayed in the editor line status panel for toggling between
  * console and REPL.
  * 
  * Code adapted from XQConsoleToggle class in processing-experimental.

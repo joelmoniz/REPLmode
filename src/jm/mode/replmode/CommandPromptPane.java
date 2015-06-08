@@ -120,6 +120,14 @@ public class CommandPromptPane extends NavigationFilter {
             component.replaceSelection(prompt);
             prefixLength = prompt.length();
             isContinuing = false;
+            if (replEditor != null) {
+              try {
+                replEditor.handleREPLRun(commandManager.toSketch());
+              } catch (Exception exc) {
+                exc.printStackTrace();
+              }
+//              System.out.println("Here");
+            }
           }
           else {
             component.replaceSelection(promptContinuation);
@@ -142,7 +150,11 @@ public class CommandPromptPane extends NavigationFilter {
         prefixLength = prompt.length();
         
         if (replEditor != null) {
-          replEditor.handleREPLRun(commandManager.toSketch());
+          try {
+            replEditor.handleREPLRun(commandManager.toSketch());
+          } catch (Exception exc) {
+            exc.printStackTrace();
+          }
         }
       }
       

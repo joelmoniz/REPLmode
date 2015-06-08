@@ -29,7 +29,7 @@ public class REPLConsolePane extends JPanel {
   private static final long serialVersionUID = -7546489577830751456L;
 
   private static final String PROMPT = ">> ";
-  private static final String PROMPT_CONTINUATION = "…    ";
+  private static final String PROMPT_CONTINUATION = "...    ";
 
   protected JScrollPane replScrollPane;
   protected JTextArea replInputArea;

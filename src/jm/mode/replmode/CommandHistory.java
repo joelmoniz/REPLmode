@@ -125,7 +125,6 @@ public class CommandHistory {
         cmdList.append('\n');
       }
     }
-    
     return cmdList.toString();
   }
   
@@ -134,6 +133,7 @@ public class CommandHistory {
     sketchCode.append("void setup() {\n");
     sketchCode.append(extractCommandBlock());
     sketchCode.append("\n}\n\nvoid draw() {}");
+    System.out.println(sketchCode.toString());
     return sketchCode.toString();
   }
 }
