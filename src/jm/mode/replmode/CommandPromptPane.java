@@ -114,16 +114,18 @@ public class CommandPromptPane extends NavigationFilter {
 
           openLeftCurlies = 0;
           isContinuing = false;
+          component.setText(prompt);
           
           commandListManager.clear();
 
         } else if (firstCommandWord.equals(CommandList.INIT_COMMAND)) {
           isDone = handleInit(trimmedCommand, false);
+          component.replaceSelection(prompt);
         } else if (firstCommandWord.equals(CommandList.REINIT_COMMAND)) {
           isDone = handleInit(trimmedCommand, true);
+          component.replaceSelection(prompt);
         }
 
-        component.replaceSelection(prompt);
         prefixLength = prompt.length();
         
         if (replEditor != null && isDone) {
