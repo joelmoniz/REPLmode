@@ -3,36 +3,51 @@ Todo
 
 UI
 ==
-[ ] Get enter key to run whole command, not break it up
-[ ] Close REPL sketch when PDE is closed
-[ ] Give REPL Mode focus, not skecth, when sketch is run
-[ ] Add colorization
+[ ] Should the command be run when the user hits ';', or when the user presses 'Enter'
+	without ending the line on a '{' or ','?
+[ ] Give REPL Mode focus, not sketch, when sketch is run
+[ ] Handle error and status messages
+    [ ] Enable printing
+    [ ] Enable colorization
+[ ] Add syntax colorization
 [ ] Update font as soon as user changes it in Preferences window
 
 Usage
 =====
 [ ] Add in simple drawing functions
 [ ] Add in miscellaneous command words specific to REPL Mode:
-        [ ] clear
-        	[ ] Ensure that init properties are copied over when clear is done
-        [ ] init x y (which serves as a replacement to size(x,y))
-        	[ ] prevent size() from being called directly
-        	[ ] allow init to be called again, the only change being that size of sketch is different
+    [ ] clear
+    	[ ] Ensure that init properties are copied over when clear is done
+    [ ] init w h renderer (which serves as a replacement to size(w,h,renderer))
+    	[ ] prevent size() from being called directly
+    	[ ] allow init to be called again, it signifying starting completely from scratch
+    	[ ] allow 3 types of calls:
+    		[ ] init
+    		[ ] init w h
+    		[ ] init w h renderer
+    [ ] reinit w h renderer (which is effectively like making the sketch larger in size 
+    	without changing any of the already existing commands)
+    	[ ] allow 3 types of calls:
+    		[ ] reinit
+    		[ ] reinit w h
+    		[ ] reinit w h renderer    	
 	[ ] undo x (undo the last x non-undo/redo statements)
 	[ ] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo
-        [ ] print (adds all correct commands executed from the last clear into an repl() function at 
-            the bottom of the current sketch)
+    [ ] print (adds all correct commands executed from the last clear into an repl() function at 
+        the bottom of the current sketch)
 [ ] Add in more complex constructs, like variable declarations, ifs and loops
+[ ] Allow import statements
 
 Bugs
 ====
 [ ] Uncaught exceptions (probably, even hopefully) run amok
-[ ] REPL sketch sometimes just doesn't open
+[ ] REPL sketch sometimes just doesn't open, especially just after PDE is started
 
 Internals
 =========
 [ ] Have errors checked line-by-line
 [ ] Hot-swap without re-opening new sketches
+[ ] Delete temporary folder used by REPL Mode on exit
 
 Readme
 ======
@@ -51,6 +66,8 @@ Done
 
 UI
 ==
+[X] Get enter key to run whole command, not break it up
+[X] Close REPL sketch when PDE is closed
 [X] Get up and down to cycle through the commands
 [X] Replace ">> " with "...  " when user enters an incomplete command (Eg: With a '{' or ',' at the end)
 [X] Give REPL Console focus when REPL tab is clicked
