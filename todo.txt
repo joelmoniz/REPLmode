@@ -16,30 +16,37 @@ Usage
 =====
 [ ] Add in simple drawing functions
 [ ] Add in miscellaneous command words specific to REPL Mode:
-    [ ] clear
-    	[ ] Ensure that init properties are copied over when clear is done
+    [X] clear
+    	[X] Ensure that init properties are copied over when clear is done
     [ ] init w h renderer (which serves as a replacement to size(w,h,renderer))
     	[ ] prevent size() from being called directly
-    	[ ] allow init to be called again, it signifying starting completely from scratch
-    	[ ] allow 3 types of calls:
-    		[ ] init
-    		[ ] init w h
-    		[ ] init w h renderer
+    	[X] allow init to be called again, it signifying starting completely from scratch
+    	[X] allow 3 types of calls:
+    		[X] init
+    		[X] init w h
+    		[X] init w h renderer
     [ ] reinit w h renderer (which is effectively like making the sketch larger in size 
     	without changing any of the already existing commands)
-    	[ ] allow 3 types of calls:
-    		[ ] reinit
-    		[ ] reinit w h
-    		[ ] reinit w h renderer    	
+    	[X] allow 3 types of calls:
+    		[X] reinit
+    		[X] reinit w h
+    		[X] reinit w h renderer
+    	[ ] Rename reinit with the brand new, ultra-creative name "resize" :/
+    		Now how on earth didn't I think of that before...
 	[ ] undo x (undo the last x non-undo/redo statements)
-	[ ] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo
-    [ ] print (adds all correct commands executed from the last clear into an repl() function at 
+	[ ] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo)
+    [ ] print fn (adds all correct commands executed from the last clear into a fn() function at 
         the bottom of the current sketch)
+    [ ] help
+    [ ] man
+    [ ] license
 [ ] Add in more complex constructs, like variable declarations, ifs and loops
 [ ] Allow import statements
+    [ ] This would include handling PDF in init
 
 Bugs
 ====
+[ ] JavaMode errors don't work. Oh oh :O
 [ ] Uncaught exceptions (probably, even hopefully) run amok
 [ ] REPL sketch sometimes just doesn't open, especially just after PDE is started
 
@@ -48,14 +55,17 @@ Internals
 [ ] Have errors checked line-by-line
 [ ] Hot-swap without re-opening new sketches
 [ ] Delete temporary folder used by REPL Mode on exit
+[ ] Use a noLoop() ?
 
 Readme
 ======
 [ ] Add build instructions
 [ ] Add usage instructions
+[ ] Add a license file
 
 Code Style
 ==========
+[ ] Refactor the code. All of it.
 [ ] Check out how enter and delete keys are handled in CommandPromptPane class
 [ ] Check out where best to handle the `clear` command actually clearing the console
 
