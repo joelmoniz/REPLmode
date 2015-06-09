@@ -3,8 +3,7 @@ package jm.mode.replmode;
 import java.util.ArrayList;
 
 /**
- * Class to store the list of commands that the user has entered so far, and to
- * perform operations related to the commands themselves.
+ * Class to store the list of commands that the user has entered so far.
  * 
  * @author Joel
  *
@@ -25,76 +24,76 @@ public class CommandHistory {
   /**
    * Store all the commands themselves.
    */
-  ArrayList<String> commandList;
+  ArrayList<String> commandHistList;
   
   /**
    * Command user is currently entering
    */
   String currentCommand;
-  
-  public static final String CLEAR_COMMAND = "clear";
+
   public static final int UNDEFINED_COMMAND_STEP = -1;
+
   
   public CommandHistory() {
     currentCycleCommand = UNDEFINED_COMMAND_STEP;
     previousClearLine = 0;
     currentCommand = "";
     
-    commandList = new ArrayList<>();
+    commandHistList = new ArrayList<>();
   }
   
   public String getPreviousCommand(String currCommand) {
     currentCycleCommand--;
     if (currentCycleCommand < 0) {
-      if (commandList.size() == 0) {
+      if (commandHistList.size() == 0) {
         currentCycleCommand = UNDEFINED_COMMAND_STEP;
         return "";
       }
       else if (currentCycleCommand == UNDEFINED_COMMAND_STEP - 1) {
-        currentCycleCommand = commandList.size() - 1;
+        currentCycleCommand = commandHistList.size() - 1;
         this.currentCommand = currCommand;
-//        System.out.println(commandList.get(currentCycleCommand));
-        return commandList.get(currentCycleCommand);
+//        System.out.println(commandHistList.get(currentCycleCommand));
+        return commandHistList.get(currentCycleCommand);
       }
       else {
         // avoid multiple up-arrow pressing after reaching 
         // top of list from causing problems
         currentCycleCommand = 0;
-        return commandList.get(0);
+        return commandHistList.get(0);
       }
     }
     else {
-      if (currentCycleCommand == commandList.size() - 1) {
+      if (currentCycleCommand == commandHistList.size() - 1) {
         this.currentCommand = currCommand;
       }
-      return commandList.get(currentCycleCommand);
+      return commandHistList.get(currentCycleCommand);
     }
   }
   
   public String getNextCommand(String currCommand) {
     currentCycleCommand++;
-    if (currentCycleCommand >= commandList.size()) {
-      if (commandList.size() == 0) {
+    if (currentCycleCommand >= commandHistList.size()) {
+      if (commandHistList.size() == 0) {
         currentCycleCommand = UNDEFINED_COMMAND_STEP;
         return "";
       }
       else {
-        if (currentCycleCommand > commandList.size()) {
+        if (currentCycleCommand > commandHistList.size()) {
           this.currentCommand = currCommand;
         }
         // avoid multiple down-arrow pressing after reaching 
         // bottom of list from causing problems
-        currentCycleCommand = commandList.size();
+        currentCycleCommand = commandHistList.size();
         return currentCommand;
       }
     }
     else if (currentCycleCommand == 0) { // first step of cycle, non-empty list
       this.currentCommand = currCommand;
-      currentCycleCommand = commandList.size();
+      currentCycleCommand = commandHistList.size();
       return currCommand;
     }
     else {
-      return commandList.get(currentCycleCommand);
+      return commandHistList.get(currentCycleCommand);
     }
   }
   
@@ -107,21 +106,21 @@ public class CommandHistory {
     resetCommandCycle();
     
     if (cmd != null && !cmd.isEmpty()) {
-      commandList.add(cmd);
+      commandHistList.add(cmd);
     }    
     
-    if (cmd.equals(CLEAR_COMMAND)) {
-      previousClearLine = commandList.size();
+    if (cmd.equals(CommandList.CLEAR_COMMAND)) {
+      previousClearLine = commandHistList.size();
     }
   }
   
   public String extractCommandBlock() {
     StringBuilder cmdList = new StringBuilder();
     
-    for (int i=previousClearLine; i<commandList.size(); i++) {
-      cmdList.append(commandList.get(i));
+    for (int i=previousClearLine; i<commandHistList.size(); i++) {
+      cmdList.append(commandHistList.get(i));
       
-      if (i != commandList.size()) {
+      if (i != commandHistList.size()) {
         cmdList.append('\n');
       }
     }
