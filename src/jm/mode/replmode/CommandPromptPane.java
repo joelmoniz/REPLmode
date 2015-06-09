@@ -2,6 +2,7 @@ package jm.mode.replmode;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -28,7 +29,8 @@ public class CommandPromptPane extends NavigationFilter {
   private Action shiftLine;
 
   JTextArea consoleArea;
-  CommandHistory commandManager;
+  CommandHistory commandHistManager;
+  CommandList commandListManager;
   REPLEditor replEditor;
 
   String prompt;
@@ -38,9 +40,10 @@ public class CommandPromptPane extends NavigationFilter {
   int openLeftCurlies;
   int rowStartPosition;
 
-  public CommandPromptPane(String prompt, String promptContinuation, REPLEditor editor, JTextArea component, CommandHistory cmdManager) {
+  public CommandPromptPane(String prompt, String promptContinuation, REPLEditor editor, JTextArea component) {
     consoleArea = component;
-    commandManager = cmdManager;
+    commandHistManager = new CommandHistory();
+    commandListManager = new CommandList(this);
     replEditor = editor;
     this.prompt = prompt;
     this.promptContinuation = promptContinuation;
@@ -96,72 +99,95 @@ public class CommandPromptPane extends NavigationFilter {
       component.setCaretPosition(component.getText().length());
       String command = getLastLine();
       String trimmedCommand = command.trim();
-      commandManager.insertCommand(command);
+      String firstCommandWord = command.split(" ")[0];
       shiftLine.actionPerformed(null);
+      commandHistManager.insertCommand(command);
+//      printStatusMessage("Done.");
 //      System.out.println("Position: "+component.getCaretPosition());
-      if (command.equals(CommandHistory.CLEAR_COMMAND)) {
-        // TODO: Or is selecting everything and then using replaceSelection() better?
+      
+      if (Arrays.asList(CommandList.REPL_COMMAND_SET).contains(firstCommandWord)) {
+        boolean isDone = true;
+        if (command.equals(CommandList.CLEAR_COMMAND)) {
+          // TODO: Or is selecting everything and then using replaceSelection() better?
 //        component.select(0, component.getText().length());
 //        component.replaceSelection(prompt);
-        
-         component.setText(prompt);
-         prefixLength = promptContinuation.length();
-         openLeftCurlies = 0;
-         isContinuing = false;
-         
-         if (replEditor != null) {
-           try {
-             replEditor.handleREPLRun(commandManager.toSketch());
-           } catch (Exception exc) {
-             exc.printStackTrace();
-           }
-         }
-      }
-      else if (isContinuing || trimmedCommand.endsWith("{") || trimmedCommand.endsWith(",")) {
-        if (trimmedCommand.endsWith("}") || trimmedCommand.endsWith(";")) {
+
+          openLeftCurlies = 0;
+          isContinuing = false;
           
-          if (trimmedCommand.endsWith("}")) {
-            openLeftCurlies--;
-          }
-            
-          if (openLeftCurlies == 0) {
-            component.replaceSelection(prompt);
-            prefixLength = prompt.length();
-            isContinuing = false;
-            if (replEditor != null) {
-              try {
-                replEditor.handleREPLRun(commandManager.toSketch());
-              } catch (Exception exc) {
-                exc.printStackTrace();
-              }
-//              System.out.println("Here");
-            }
-          }
-          else {
-            component.replaceSelection(promptContinuation);
-            prefixLength = promptContinuation.length();
-            isContinuing = true;
-          }
+          commandListManager.clear();
+
+        } else if (firstCommandWord.equals(CommandList.INIT_COMMAND)) {
+          isDone = handleInit(trimmedCommand, false);
+        } else if (firstCommandWord.equals(CommandList.REINIT_COMMAND)) {
+          isDone = handleInit(trimmedCommand, true);
         }
-        else {
-          component.replaceSelection(promptContinuation);
-          prefixLength = promptContinuation.length();
-          isContinuing = true;
-          
-          if (trimmedCommand.endsWith("{")) {
-            openLeftCurlies++;
-          }
-        }
-      }
-      else {
+
         component.replaceSelection(prompt);
         prefixLength = prompt.length();
         
-        if (replEditor != null) {
+        if (replEditor != null && isDone) {
+          String temp = commandListManager.getREPLSketchCode();
           try {
-            replEditor.handleREPLRun(commandManager.toSketch());
+            if (temp != null) {
+              replEditor.handleREPLRun(temp);
+            }
           } catch (Exception exc) {
             exc.printStackTrace();
+          }
+        }
+
+      } else {
+
+        if (isContinuing || trimmedCommand.endsWith("{")
+            || trimmedCommand.endsWith(",")) {
+          commandListManager.addContinuingStatement(command);
+          
+          if (trimmedCommand.endsWith("}") || trimmedCommand.endsWith(";")) {
+            if (trimmedCommand.endsWith("}")) {
+              openLeftCurlies--;
+            }
+            if (openLeftCurlies == 0) {
+              commandListManager.endContinuingStatement();
+              component.replaceSelection(prompt);
+              prefixLength = prompt.length();
+              isContinuing = false;
+              String temp = commandListManager.getREPLSketchCode();
+              if (replEditor != null && temp != null) {
+                try {
+                  replEditor.handleREPLRun(temp);
+                } catch (Exception exc) {
+                  exc.printStackTrace();
+                }
+//              System.out.println("Here");
+              }
+            } else {
+              component.replaceSelection(promptContinuation);
+              prefixLength = promptContinuation.length();
+              isContinuing = true;
+            }
+          } else {
+            component.replaceSelection(promptContinuation);
+            prefixLength = promptContinuation.length();
+            isContinuing = true;
+
+            if (trimmedCommand.endsWith("{")) {
+              openLeftCurlies++;
+            }
+          }
+        } else {
+          commandListManager.addStatement(command);
+          String temp = commandListManager.getREPLSketchCode();
+          component.replaceSelection(prompt);
+          prefixLength = prompt.length();
+
+          if (replEditor != null && temp != null) {
+            try {
+//              String temp2 = commandHistManager.toSketch();
+              replEditor.handleREPLRun(temp);
+            } catch (Exception exc) {
+              exc.printStackTrace();
+            }
           }
         }
       }
@@ -173,6 +199,91 @@ public class CommandPromptPane extends NavigationFilter {
         e1.printStackTrace();
       }
     }
+  }
+  
+  private boolean handleInit(String arg, boolean isReInit) {
+    String args[] = arg.split("\\s+");
+    boolean wasSuccess = false;
+    if (args.length == 1) {
+      if (isReInit) {
+        commandListManager.reinit();
+      }
+      else {
+        commandListManager.init();
+      }
+//      wasSuccess = true;
+    }
+    else if (args.length == 3 || args.length == 4) {
+      int w=100, h=100, errCount=0;
+      wasSuccess = true;
+      String err = "Error: ";
+      
+      try {
+        w = Integer.parseInt(args[1]);
+      } catch (NumberFormatException nfe) {
+        err += "w=" + args[1];
+        wasSuccess = false;
+        errCount++;
+      }
+      
+      try {
+        h = Integer.parseInt(args[2]);
+      } catch (NumberFormatException nfe) {
+        errCount++;
+        if (!wasSuccess) {
+          err += " and ";
+        }
+        err += "h=" + args[2];
+        wasSuccess = false;
+      }
+      
+      if (!wasSuccess) {
+        if (errCount == 1) {
+          err += " is not an integer";
+        }
+        else if (errCount == 2) {
+          err += " are not integers";
+        }
+      }
+      
+      if (args.length == 4
+          && !Arrays.asList(CommandList.SIZE_RENDERERS).contains(args[3])) {
+        if (!wasSuccess) {
+          err += " and ";
+        }
+        wasSuccess = false;
+        err += "\"" + args[3] + "\" renderer is undefined (only ";
+        for (int i=0; i<CommandList.SIZE_RENDERERS.length; i++) {
+          if (i != CommandList.SIZE_RENDERERS.length-1) {
+          err += "\"" + CommandList.SIZE_RENDERERS[i] + "\", ";
+          }
+          else {
+            err += "and \"" + CommandList.SIZE_RENDERERS[i] + "\"";
+          }
+        }
+        err += " renderers may be used)";
+      }
+      
+      if (wasSuccess) {
+        if (args.length == 3) {
+          if (isReInit) {
+            commandListManager.reinit(w, h);
+          } else {
+            commandListManager.init(w, h);
+          }
+        } else {
+          if (isReInit) {
+            commandListManager.reinit(w, h, args[3]);
+          } else {
+            commandListManager.init(w, h, args[3]);
+          }
+        }
+      } else {
+        printStatusMessage(err);
+      }
+    }
+    
+    return wasSuccess;
   }
 
   class KeyAction extends AbstractAction {
@@ -189,14 +300,14 @@ public class CommandPromptPane extends NavigationFilter {
       JTextArea component = (JTextArea) e.getSource();
       String prevCommand = getLastLine();
       if (key.equals("up")) {
-        cycledCommand = commandManager.getPreviousCommand(prevCommand);
+        cycledCommand = commandHistManager.getPreviousCommand(prevCommand);
 //        System.out.println(getLastLine());
-//        System.out.println(commandManager.getPreviousCommand(getLastLine()));
+//        System.out.println(commandHistManager.getPreviousCommand(getLastLine()));
       }
       else if (key.equals("down")) {
-        cycledCommand = commandManager.getNextCommand(prevCommand);
+        cycledCommand = commandHistManager.getNextCommand(prevCommand);
 //        System.out.println(getLastLine());
-//        System.out.println(commandManager.getNextCommand(getLastLine()));        
+//        System.out.println(commandHistManager.getNextCommand(getLastLine()));        
       }
 //      System.out.println(cycledCommand);
 //      System.out.println(component.getText().lastIndexOf(prompt) + prompt.length()
@@ -222,14 +333,29 @@ public class CommandPromptPane extends NavigationFilter {
     }
   }
 
-//  class CommandKeyListener implements KeyListener {
+  /**
+   * Prints a status message on a new line
+   * @param msg The status message
+   */
+  public void printStatusMessage(String msg) {
+    consoleArea.replaceSelection(msg + "\n");// + prompt);
+//    prefixLength = prompt.length();
+//    try {
+//      rowStartPosition = Math.max(rowStartPosition, Utilities
+//          .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+//    } catch (BadLocationException e1) {
+//      e1.printStackTrace();
+//    }
+  }
+
+/*//  class CommandKeyListener implements KeyListener {
 //
 //    @Override
 //    public void keyTyped(KeyEvent e) {
 //      switch (e.getKeyCode()) {
 //      case KeyEvent.VK_UP:
 //        System.out.println("Here");
-//        System.out.println(commandManager.getPreviousCommand(getLastLine()));
+//        System.out.println(commandHistManager.getPreviousCommand(getLastLine()));
 //      }
 //    }
 //
@@ -241,7 +367,7 @@ public class CommandPromptPane extends NavigationFilter {
 //    public void keyReleased(KeyEvent e) {
 //    }
 //
-//  }
+//  }*/
   
   public String getLastLine() {
     // TODO: Is there a more efficient way of extracting the last line of code?
@@ -309,8 +435,8 @@ public class CommandPromptPane extends NavigationFilter {
   public static void main(String args[]) throws Exception {
 
     JTextArea textField = new JTextArea(">> ", 20, 40);
-    CommandHistory cmd = new CommandHistory();
-    textField.setNavigationFilter(new CommandPromptPane(">> ", "...  ", null, textField, cmd));
+    CommandPromptPane cmdPromptPane = new CommandPromptPane(">> ", "...  ", null, textField);
+    textField.setNavigationFilter(cmdPromptPane);
 
     JFrame frame = new JFrame("Navigation Filter Example");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

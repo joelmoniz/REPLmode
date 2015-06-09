@@ -9,7 +9,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EtchedBorder;
 
-import processing.app.Editor;
 import processing.app.Preferences;
 
 /**
@@ -33,16 +32,14 @@ public class REPLConsolePane extends JPanel {
 
   protected JScrollPane replScrollPane;
   protected JTextArea replInputArea;
-  protected CommandHistory command;
   protected CommandPromptPane replInputPaneFilter;
 
   public REPLConsolePane(REPLEditor editor) {
 
     replInputArea = new JTextArea(PROMPT);
-    command = new CommandHistory();
     
     // Set navigation filter
-    replInputPaneFilter = new CommandPromptPane(PROMPT, PROMPT_CONTINUATION, editor, replInputArea, command);
+    replInputPaneFilter = new CommandPromptPane(PROMPT, PROMPT_CONTINUATION, editor, replInputArea);
     replInputArea.setNavigationFilter(replInputPaneFilter);
 
     // Appearance-related
