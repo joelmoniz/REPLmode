@@ -108,6 +108,14 @@ public class CommandPromptPane extends NavigationFilter {
          prefixLength = promptContinuation.length();
          openLeftCurlies = 0;
          isContinuing = false;
+         
+         if (replEditor != null) {
+           try {
+             replEditor.handleREPLRun(commandManager.toSketch());
+           } catch (Exception exc) {
+             exc.printStackTrace();
+           }
+         }
       }
       else if (isContinuing || trimmedCommand.endsWith("{") || trimmedCommand.endsWith(",")) {
         if (trimmedCommand.endsWith("}") || trimmedCommand.endsWith(";")) {
