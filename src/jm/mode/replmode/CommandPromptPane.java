@@ -117,13 +117,28 @@ public class CommandPromptPane extends NavigationFilter {
           component.setText(prompt);
           
           commandListManager.clear();
+          rowStartPosition = 0;
 
         } else if (firstCommandWord.equals(CommandList.INIT_COMMAND)) {
           isDone = handleInit(trimmedCommand, false);
-          component.replaceSelection(prompt);
+          component.setText(prompt + trimmedCommand + '\n' + prompt);
+          try {
+            int cp = consoleArea.getCaretPosition();
+            rowStartPosition = Utilities.getRowStart(consoleArea, cp);
+            System.out.println(rowStartPosition);
+          } catch (BadLocationException e1) {
+            e1.printStackTrace();
+          }
         } else if (firstCommandWord.equals(CommandList.REINIT_COMMAND)) {
           isDone = handleInit(trimmedCommand, true);
           component.replaceSelection(prompt);
+          try {
+            rowStartPosition = Math.max(rowStartPosition, Utilities
+                .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+            System.out.println(rowStartPosition);
+          } catch (BadLocationException e1) {
+            e1.printStackTrace();
+          }
         }
 
         prefixLength = prompt.length();
@@ -192,14 +207,16 @@ public class CommandPromptPane extends NavigationFilter {
             }
           }
         }
+        
+        try {
+          rowStartPosition = Math.max(rowStartPosition, Utilities
+              .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+          System.out.println(rowStartPosition);
+        } catch (BadLocationException e1) {
+          e1.printStackTrace();
+        }
       }
       
-      try {
-        rowStartPosition = Math.max(rowStartPosition, Utilities
-            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
-      } catch (BadLocationException e1) {
-        e1.printStackTrace();
-      }
     }
   }
   
