@@ -15,9 +15,13 @@
     <!-- location of processing jars (core.jar, pde.jar, ..) -->
     <property name="processing.classes.core" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\core\\library" />
     <property name="processing.classes.pde" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\lib" />
+    <property name="processing.classes.javamode" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\java\\mode" />
     
     <!-- folder to install modes in (probably a folder called "modes" inside your sketchbook folder) -->
     <property name="processing.modes" location="${user.home}/Documents/Processing/modes"/>
+
+    <!-- path to your processing build file. -->
+    <property name="processing.build" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\build.xml"/>
 
     <!-- path to your processing executable. -->
     <property name="processing.executable" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\processing.exe"/>
@@ -114,4 +118,27 @@
     <target name="run" depends="install">
         <exec executable="${processing.executable}" spawn="false" />
     </target>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - -
+        PDE
+    - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <target name="pde">
+        <ant antfile="${processing.build}" target="build" useNativeBasedir="true" />
+        
+        <delete file="lib/JavaMode.jar"/>       
+        <copy todir="lib">
+            <fileset dir="${processing.classes.javamode}">
+                <include name="JavaMode.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - -
+        FULL
+    - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <target name="full" depends="pde,run">
+    </target>
+
 </project>
