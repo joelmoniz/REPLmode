@@ -230,7 +230,7 @@ public class CommandPromptPane extends NavigationFilter {
       else {
         commandListManager.init();
       }
-//      wasSuccess = true;
+      wasSuccess = true;
     }
     else if (args.length == 3 || args.length == 4) {
       int w=100, h=100, errCount=0;
