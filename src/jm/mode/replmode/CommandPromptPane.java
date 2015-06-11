@@ -3,6 +3,7 @@ package jm.mode.replmode;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -170,6 +171,44 @@ public class CommandPromptPane extends NavigationFilter {
           }
           else {
             isDone = handleUndo(trimmedCommand, true);
+            component.replaceSelection(prompt);
+          }
+          try {
+            rowStartPosition = Math.max(rowStartPosition, Utilities
+                .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+            System.out.println(rowStartPosition);
+          } catch (BadLocationException e1) {
+            e1.printStackTrace();
+          }
+        } else if (firstCommandWord.equals(CommandList.PRINT_COMMAND)) {
+          // Always have isDone as false, since we really don't want anything to get updated
+          isDone = false;
+          if (isContinuing) {
+            printStatusMessage("Oops! REPL Mode is in the midst of another command (block)");
+            component.replaceSelection(promptContinuation);
+          }
+          else {
+            String[] args = trimmedCommand.split("\\s+");
+            if (args.length != 2) {
+              if (args.length > 2) {
+                printStatusMessage("Error: print should have only "
+                    + "a single function name as argument");
+              }
+              else {
+                printStatusMessage("Error: print should have only "
+                    + "a single function name as argument");
+              }
+            }
+            else {
+              if (!isValidFunctionName(args[1])) {
+                printStatusMessage("Error: \"" + args[1] + "\"" + 
+                    " is not a valid function name");
+              }
+              else {
+                String code = commandListManager.getCodeFunction(args[1]);
+                replEditor.setText(replEditor.getText() + "\n" + code);
+              }
+            }
             component.replaceSelection(prompt);
           }
           try {
@@ -390,6 +429,12 @@ public class CommandPromptPane extends NavigationFilter {
       }
     }
     return wasSuccess;
+  }
+  
+  private boolean isValidFunctionName(String fn) {
+    // TODO: Is this correct?
+    Pattern FN_NAME_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
+    return FN_NAME_PATTERN.matcher(fn).find();
   }
   
   class KeyAction extends AbstractAction {
