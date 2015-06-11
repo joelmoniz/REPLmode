@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JPanel;
+import javax.swing.event.DocumentListener;
 
 import processing.app.Base;
 import processing.app.EditorFooter;
@@ -15,7 +16,9 @@ import processing.app.Mode;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
 import processing.app.Sketch;
+import processing.app.SketchCode;
 import processing.app.SketchException;
+import processing.app.syntax.SyntaxDocument;
 import processing.mode.java.JavaBuild;
 import processing.mode.java.JavaEditor;
 import processing.mode.java.runner.Runner;
@@ -79,13 +82,32 @@ public class REPLEditor extends JavaEditor {
       
 //      final String temp = path.substring(path.substring(0, path.lastIndexOf('\\'))
 //      .lastIndexOf('\\'), path.lastIndexOf('\\')+1);
-      final File tempFile = File.createTempFile("tmp", ".pde", subdir);
+      final File tempFile = new File(subdir, subdir.getName() + ".pde");//File.createTempFile("tmp", ".pde", subdir);
+      tempFile.createNewFile();
+//      System.out.println(tempFile.getAbsolutePath());
+//      System.out.println(sketch.getMainFilePath());
       replTempSketch = new Sketch(tempFile.getAbsolutePath(), this);
+      
+      // These few lines are needed to added back the document listeners, since otherwise
+      // the line creating a new sketch for replTempSketch messes with the main sketch's
+      // document listeners- the PDE thinks that it has switched to a new editor, so
+      // the document listeners get added there
+      for (final SketchCode sc : REPLEditor.this.getSketch().getCode()) {
+        setCode(sc);
+      }
       
 //      Thread one = new Thread() {
 //        public void run() {
 //          try {
 //            Thread.sleep(7000);
+//            for (final SketchCode sc : REPLEditor.this.getSketch().getCode()) {
+//              REPLEditor.this.setCode(sc);
+//              int i=0;
+//              for (DocumentListener dl : ((SyntaxDocument) sc.getDocument())
+//                  .getDocumentListeners()) {
+//                System.out.println((i++) + ":  " + dl.getClass().getName());
+//              }
+//            }
 //            System.out.println("Here");
 //            System.out.println(sketch.getFolder().getName());
 //            System.out.println(replTempSketch.getFolder().getName());
@@ -313,6 +335,11 @@ public class REPLEditor extends JavaEditor {
   public void internalCloseRunner() {
     super.internalCloseRunner();
     handleREPLStop();
+  }
+  
+  @Override
+  protected void setCode(SketchCode code) {
+    super.setCode(code);
   }
 
 }
