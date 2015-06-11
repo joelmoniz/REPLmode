@@ -130,8 +130,48 @@ public class CommandPromptPane extends NavigationFilter {
             e1.printStackTrace();
           }
         } else if (firstCommandWord.equals(CommandList.REINIT_COMMAND)) {
-          isDone = handleInit(trimmedCommand, true);
-          component.replaceSelection(prompt);
+          if (isContinuing) {
+            printStatusMessage("Oops! REPL Mode is in the midst of another command (block)");
+            isDone = false;
+            component.replaceSelection(promptContinuation);
+          }
+          else {
+            isDone = handleInit(trimmedCommand, true);
+            component.replaceSelection(prompt);
+          }
+          try {
+            rowStartPosition = Math.max(rowStartPosition, Utilities
+                .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+          } catch (BadLocationException e1) {
+            e1.printStackTrace();
+          }
+        } else if (firstCommandWord.equals(CommandList.UNDO_COMMAND)) {
+          if (isContinuing) {
+            printStatusMessage("Oops! REPL Mode is in the midst of another command (block)");
+            isDone = false;
+            component.replaceSelection(promptContinuation);
+          }
+          else {
+            isDone = handleUndo(trimmedCommand, false);
+            component.replaceSelection(prompt);
+          }
+          try {
+            rowStartPosition = Math.max(rowStartPosition, Utilities
+                .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+            System.out.println(rowStartPosition);
+          } catch (BadLocationException e1) {
+            e1.printStackTrace();
+          }
+        } else if (firstCommandWord.equals(CommandList.REDO_COMMAND)) {
+          if (isContinuing) {
+            printStatusMessage("Oops! REPL Mode is in the midst of another command (block)");
+            isDone = false;
+            component.replaceSelection(promptContinuation);
+          }
+          else {
+            isDone = handleUndo(trimmedCommand, true);
+            component.replaceSelection(prompt);
+          }
           try {
             rowStartPosition = Math.max(rowStartPosition, Utilities
                 .getRowStart(consoleArea, consoleArea.getCaretPosition()));
@@ -305,6 +345,53 @@ public class CommandPromptPane extends NavigationFilter {
     return wasSuccess;
   }
 
+  private boolean handleUndo(String arg, boolean isRedo) {
+    String[] undo = arg.split("\\s+");
+    boolean wasSuccess = true;
+    int k = 0;
+    if (undo.length == 1) {
+      if (!isRedo) {
+        k = commandListManager.undo(1);
+      }
+      else {
+        k = commandListManager.redo(1);
+      }
+    }
+    else if (undo.length == 2) {
+      int n;
+      try {
+        n = Integer.parseInt(undo[1]);
+        if (!isRedo) {
+          k = commandListManager.undo(n);
+        }
+        else {
+          k = commandListManager.redo(n);
+        }
+      } catch (NumberFormatException nfe) {
+        printStatusMessage("Error: n=" + undo[1] + " is not an integer");
+        wasSuccess = false;
+      }
+    }
+    else {
+      wasSuccess = false;
+      printStatusMessage("Error: undo command should have only 0 or 1 arguments");
+    }
+    
+    if (wasSuccess) {
+      if (k==0){
+        printStatusMessage("Nothing to " + (!isRedo?"undo":"redo"));
+        wasSuccess = false;
+      }
+      else if (k==1) {
+        printStatusMessage("1 statement " + (!isRedo?"undone":"redone"));
+      }
+      else {
+        printStatusMessage(k + " statements " + (!isRedo?"undone":"redone"));
+      }
+    }
+    return wasSuccess;
+  }
+  
   class KeyAction extends AbstractAction {
 
     private static final long serialVersionUID = 3382543935199626852L;

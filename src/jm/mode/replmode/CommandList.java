@@ -3,6 +3,8 @@ package jm.mode.replmode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Stack;
+import static java.lang.Math.min;
 
 import processing.mode.java.AutoFormat;
 
@@ -17,6 +19,8 @@ public class CommandList {
   CommandPromptPane promptPane;
   ArrayList<String> commandList;
   ArrayList<String> continuingCommandList;
+  Stack<String> undoStack;
+  boolean isUndoing;
   AutoFormat formatter;
   Size size;  
   
@@ -82,6 +86,8 @@ public class CommandList {
     this.promptPane = promptPane;
     commandList = new ArrayList<>();
     continuingCommandList = new ArrayList<>();
+    undoStack = new Stack<>();
+    isUndoing = false;
     formatter = new AutoFormat();
     size = null;
   }
@@ -104,54 +110,90 @@ public class CommandList {
   public void init() {
     commandList.clear();
     continuingCommandList.clear();
+    clearUndoStack();
     size = new Size();
   }
   
   public void init(int w, int h) {
     commandList.clear();
     continuingCommandList.clear();
+    clearUndoStack();
     size = new Size(w, h);
   }
   
   public void init(int w, int h, String renderer) {
     commandList.clear();
     continuingCommandList.clear();
+    clearUndoStack();
     size = new Size(w, h, renderer);
   }
   
   public void addStatement(String stmt) {
+    if (stmt.trim().equals("")) {
+      return;
+    }
     if (size != null) {
       commandList.add(stmt);
     }
+    clearUndoStack();
   }
   
   public void addContinuingStatement(String stmt) {
+    if (stmt.trim().equals("")) {
+      return;
+    }
+      
     if (size != null) {
       continuingCommandList.add(stmt);
     }
+    clearUndoStack();
   }
   
   public void endContinuingStatement() {
     // TODO: Check errors
     Iterator<String> it = continuingCommandList.iterator();
-    
+    StringBuilder contCmd = new StringBuilder();
     while (it.hasNext()) {
-      String n = it.next();
-      
-      while (n.trim().endsWith(",") && it.hasNext()) {
-        n += it.next(); // don't expect this to be too many operations, 
-                        // so using a String instead of a StringBuilder
-      }
-      
-      commandList.add(n);
+      contCmd.append(it.next());
     }
+    // Need to squish it into one line for undo to work without
+    // having things either inefficient or overly complex
+    commandList.add(contCmd.toString());
     
 //    commandList.addAll(continuingCommandList);
     continuingCommandList.clear();
+    clearUndoStack();
   }
   
   public void clear() {
     commandList.clear();
+    clearUndoStack();
+  }
+  
+  public void clearUndoStack() {
+    undoStack.clear();
+    isUndoing = false;
+  }
+  
+  public int undo(int x) {
+    int n = min(x,commandList.size());
+    isUndoing = true;
+    for(int i=commandList.size()-1,j=0; j<n;i--,j++) {
+      undoStack.push(commandList.get(i));
+      commandList.remove(i);
+    }
+    return n;
+  }
+  
+  public int redo(int x) {
+    if (!isUndoing) {
+      return 0;
+    }
+    int n = min(x,undoStack.size());
+    for (int i=0;i<n;i++) {
+      commandList.add(undoStack.pop());
+    }
+    return n;
   }
   
   // TODO: Think of the best minimalistic sketch to write once issues 
