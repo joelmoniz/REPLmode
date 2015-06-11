@@ -19,7 +19,7 @@ import javax.swing.text.Utilities;
  * Class responsible for setting up a NavigationFilter that makes a JTextArea
  * have command-prompt-esque properties.
  * 
- * Code adapted from 
+ * UI Code adapted from 
  * <a href=http://www.coderanch.com/t/508726/GUI/java/creating-custom-command-prompt-java#post_text_2299445>here</a>.
  */
 public class CommandPromptPane extends NavigationFilter {
@@ -199,6 +199,9 @@ public class CommandPromptPane extends NavigationFilter {
                     + "a single function name as argument");
               }
             }
+            else if (!commandListManager.hasStuffToPrint()) {
+              printStatusMessage("Nothing to print into a function yet.");
+            }
             else {
               if (!isValidFunctionName(args[1])) {
                 printStatusMessage("Error: \"" + args[1] + "\"" + 
@@ -237,7 +240,7 @@ public class CommandPromptPane extends NavigationFilter {
 
         if (isContinuing || trimmedCommand.endsWith("{")
             || trimmedCommand.endsWith(",")) {
-          commandListManager.addContinuingStatement(command);
+          boolean error = commandListManager.addContinuingStatement(command);
           
           if (trimmedCommand.endsWith("}") || trimmedCommand.endsWith(";")) {
             if (trimmedCommand.endsWith("}")) {
@@ -249,7 +252,7 @@ public class CommandPromptPane extends NavigationFilter {
               prefixLength = prompt.length();
               isContinuing = false;
               String temp = commandListManager.getREPLSketchCode();
-              if (replEditor != null && temp != null) {
+              if (replEditor != null && !error) {
                 try {
                   replEditor.handleREPLRun(temp);
                 } catch (Exception exc) {
@@ -272,12 +275,13 @@ public class CommandPromptPane extends NavigationFilter {
             }
           }
         } else {
-          commandListManager.addStatement(command);
+          boolean error = true;
+          error = commandListManager.addStatement(command);
           String temp = commandListManager.getREPLSketchCode();
           component.replaceSelection(prompt);
           prefixLength = prompt.length();
 
-          if (replEditor != null && temp != null) {
+          if (replEditor != null && !error) {
             try {
 //              String temp2 = commandHistManager.toSketch();
               replEditor.handleREPLRun(temp);

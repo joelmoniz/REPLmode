@@ -128,29 +128,42 @@ public class CommandList {
     size = new Size(w, h, renderer);
   }
   
-  public void addStatement(String stmt) {
+  public boolean addStatement(String stmt) {
+    boolean error = false;
     if (stmt.trim().equals("")) {
-      return;
+      ;
     }
-    if (size != null) {
+    else if (size != null) {
       commandList.add(stmt);
     }
+    else {
+      error = true;
+      promptPane.printStatusMessage("Nope. You'll need to run `init` first.");
+    }
     clearUndoStack();
+    return error;
   }
   
-  public void addContinuingStatement(String stmt) {
+  public boolean addContinuingStatement(String stmt) {
+    boolean error = false;
     if (stmt.trim().equals("")) {
-      return;
-    }
-      
-    if (size != null) {
+      ; 
+    }      
+    else if (size != null) {
       continuingCommandList.add(stmt);
     }
+    else {
+      error = true;
+      promptPane.printStatusMessage("Nope. You'll need to run `init` first.");
+    }
     clearUndoStack();
+    return error;
   }
   
   public void endContinuingStatement() {
     // TODO: Check errors
+    // No need to check for uninitialized size here, since this function 
+    // won't be called unless addContinuing statement succeeds
     Iterator<String> it = continuingCommandList.iterator();
     StringBuilder contCmd = new StringBuilder();
     while (it.hasNext()) {
@@ -201,7 +214,6 @@ public class CommandList {
   //       seem a little hacky. 
   public String getREPLSketchCode() {
     if (size == null) {
-      promptPane.printStatusMessage("Nope. You'll need to run `init` first.");
       return null;
     }
     StringBuilder code = new StringBuilder();
@@ -223,7 +235,13 @@ public class CommandList {
     return formatter.format(code.toString());
   }
   
+  public boolean hasStuffToPrint() {
+    return (commandList!=null && !commandList.isEmpty());
+  }
+  
   public String getCodeFunction(String functionName) {
+    
+    clearUndoStack();
 
     StringBuilder code = new StringBuilder();
 
