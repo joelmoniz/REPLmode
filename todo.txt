@@ -5,9 +5,10 @@ UI
 ==
 [ ] Should the command be run when the user hits ';', or when the user presses 'Enter'
 	without ending the line on a '{' or ','?
+[ ] Permit sketch and REPL windows to be present separately, together?
 [ ] Give REPL Mode focus, not sketch, when sketch is run
 [ ] Handle error and status messages
-    [ ] Enable printing
+    [X] Enable printing
     [ ] Enable colorization
 [ ] Add syntax colorization
 [ ] Update font as soon as user changes it in Preferences window
@@ -33,20 +34,25 @@ Usage
     		[X] reinit w h renderer
     	[ ] Rename reinit with the brand new, ultra-creative name "resize" :/
     		Now how on earth didn't I think of that before...
-	[ ] undo x (undo the last x non-undo/redo statements)
-	[ ] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo)
+	[X] undo x (undo the last x non-undo/redo statements)
+	[X] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo)
     [ ] print fn (adds all correct commands executed from the last clear into a fn() function at 
         the bottom of the current sketch)
+    	[X] implement print, ensuring only 1 argument is provided
+    	[ ] ensure argument is a valid function name
+    	[ ] print either as last function in file, or as last function in class
     [ ] help
     [ ] man
     [ ] license
 [ ] Add in more complex constructs, like variable declarations, ifs and loops
 [ ] Allow import statements
     [ ] This would include handling PDF in init
+[ ] Should clear just clear the console? And the user use init when the sketch needs to be cleared?
 
 Bugs
 ====
-[ ] JavaMode errors don't work. Oh oh :O
+[X] JavaMode errors don't work. Oh oh :O
+[X] Arrow keys don't move right after clear is run
 [ ] Uncaught exceptions (probably, even hopefully) run amok
 [ ] REPL sketch sometimes just doesn't open, especially just after PDE is started
 
@@ -66,6 +72,9 @@ Readme
 Code Style
 ==========
 [ ] Refactor the code. All of it.
+    [ ] Remove the dozen-odd test functions and functions no longer in use
+    [ ] There was a now unused class in there. Remove it after ensuring it is, indeed, unused.
+    [ ] Remove all the junk commented out code.
 [ ] Check out how enter and delete keys are handled in CommandPromptPane class
 [ ] Check out where best to handle the `clear` command actually clearing the console
 
