@@ -144,6 +144,12 @@ public class CommandList {
     return error;
   }
   
+  public void removePreviousStatement() {
+    if (commandList != null && !commandList.isEmpty()) {
+      commandList.remove(commandList.size()-1);
+    }
+  }
+  
   public boolean addContinuingStatement(String stmt) {
     boolean error = false;
     if (stmt.trim().equals("")) {

@@ -285,7 +285,9 @@ public class REPLEditor extends JavaEditor {
           try {
             replRuntime = handleREPLRun(replTempSketch, REPLEditor.this);
           } catch (Exception e) {
-            statusError(e);
+            replConsole.getCommandPromptPane().printStatusException(e);
+            replConsole.getCommandPromptPane().undoLastStatement();
+            replConsole.getCommandPromptPane().runTempSketch(false);
           }
         }
       }).start();

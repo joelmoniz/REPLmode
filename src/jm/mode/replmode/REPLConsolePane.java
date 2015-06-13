@@ -70,4 +70,8 @@ public class REPLConsolePane extends JPanel {
   protected void clear() {
     replInputArea.setText(PROMPT);
   }
+  
+  public CommandPromptPane getCommandPromptPane() {
+    return replInputPaneFilter;
+  }
 }

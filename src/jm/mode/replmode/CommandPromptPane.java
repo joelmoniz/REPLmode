@@ -1,5 +1,4 @@
 package jm.mode.replmode;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
@@ -225,16 +224,7 @@ public class CommandPromptPane extends NavigationFilter {
 
         prefixLength = prompt.length();
         
-        if (replEditor != null && isDone) {
-          String temp = commandListManager.getREPLSketchCode();
-          try {
-            if (temp != null) {
-              replEditor.handleREPLRun(temp);
-            }
-          } catch (Exception exc) {
-            exc.printStackTrace();
-          }
-        }
+        runTempSketch(!isDone); // since !isDone ==> isError
 
       } else {
 
@@ -251,15 +241,7 @@ public class CommandPromptPane extends NavigationFilter {
               component.replaceSelection(prompt);
               prefixLength = prompt.length();
               isContinuing = false;
-              String temp = commandListManager.getREPLSketchCode();
-              if (replEditor != null && !error) {
-                try {
-                  replEditor.handleREPLRun(temp);
-                } catch (Exception exc) {
-                  exc.printStackTrace();
-                }
-//              System.out.println("Here");
-              }
+              runTempSketch(error);
             } else {
               component.replaceSelection(promptContinuation);
               prefixLength = promptContinuation.length();
@@ -275,20 +257,11 @@ public class CommandPromptPane extends NavigationFilter {
             }
           }
         } else {
-          boolean error = true;
-          error = commandListManager.addStatement(command);
-          String temp = commandListManager.getREPLSketchCode();
+          boolean error = commandListManager.addStatement(command);
           component.replaceSelection(prompt);
           prefixLength = prompt.length();
 
-          if (replEditor != null && !error) {
-            try {
-//              String temp2 = commandHistManager.toSketch();
-              replEditor.handleREPLRun(temp);
-            } catch (Exception exc) {
-              exc.printStackTrace();
-            }
-          }
+          runTempSketch(error);
         }
         
         try {
@@ -441,6 +414,17 @@ public class CommandPromptPane extends NavigationFilter {
     return FN_NAME_PATTERN.matcher(fn).find();
   }
   
+  protected void runTempSketch(boolean error) {
+    if (replEditor != null && !error) {
+      try {
+        String code = commandListManager.getREPLSketchCode();
+        replEditor.handleREPLRun(code);
+      } catch (Exception exc) {
+        exc.printStackTrace();
+      }
+    }
+  }
+  
   class KeyAction extends AbstractAction {
 
     private static final long serialVersionUID = 3382543935199626852L;
@@ -502,6 +486,82 @@ public class CommandPromptPane extends NavigationFilter {
 //      e1.printStackTrace();
 //    }
   }
+  
+  /**
+   * Prints the exception in the REPL Pane. Based on the Editor's
+   * statusError() method.
+   * @param e
+   */
+  public void printStatusException(Exception e) {
+      e.printStackTrace();
+      // TODO: Print line number
+      /*
+      Sketch sketch = replEditor.getREPLTempSketch();
+      if (e instanceof SketchException) {
+        SketchException re = (SketchException) e;
+        if (re.hasCodeLine()) {
+          int line = re.getCodeLine();
+          // subtract one from the end so that the \n ain't included
+          if (line >= textarea.getLineCount()) {
+            // The error is at the end of this current chunk of code,
+            // so the last line needs to be selected.
+            line = textarea.getLineCount() - 1;
+            if (textarea.getLineText(line).length() == 0) {
+              // The last line may be zero length, meaning nothing to select.
+              // If so, back up one more line.
+              line--;
+            }
+          }
+          if (line < 0 || line >= textarea.getLineCount()) {
+            System.err.println("Bad error line: " + line);
+          } else {
+            textarea.select(textarea.getLineStartOffset(line),
+                            textarea.getLineStopOffset(line) - 1);
+          }
+        }
+      }
+        */
+
+      // Since this will catch all Exception types, spend some time figuring
+      // out which kind and try to give a better error message to the user.
+      String mess = e.getMessage();
+      if (mess != null) {
+        String javaLang = "java.lang.";
+        if (mess.indexOf(javaLang) == 0) {
+          mess = mess.substring(javaLang.length());
+        }
+        // The phrase "RuntimeException" isn't useful for most users
+        String rxString = "RuntimeException: ";
+        if (mess.startsWith(rxString)) {
+          mess = mess.substring(rxString.length());
+        }
+        // This is just confusing for most PDE users (save it for Eclipse users)
+        String illString = "IllegalArgumentException: ";
+        if (mess.startsWith(illString)) {
+          mess = mess.substring(illString.length());
+        }
+        
+        int currPrefixLength = prefixLength;
+        prefixLength = 0;
+        int currPos = consoleArea.getCaretPosition();
+        isContinuing = false;
+        consoleArea.setSelectionStart(currPos-currPrefixLength);
+        consoleArea.setSelectionEnd(currPos);
+        printStatusMessage("Error: " + mess);
+        consoleArea.setCaretPosition(consoleArea.getText().length());
+        consoleArea.replaceSelection(prompt);
+        consoleArea.setCaretPosition(consoleArea.getText().length());
+        prefixLength = prompt.length();
+        try {
+          rowStartPosition = Math.max(rowStartPosition, Utilities
+              .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+        } catch (BadLocationException e1) {
+          e1.printStackTrace();
+        }
+        //rect(20,20,40,i);
+      }
+//      e.printStackTrace();
+  }
 
 /*//  class CommandKeyListener implements KeyListener {
 //
@@ -536,6 +596,10 @@ public class CommandPromptPane extends NavigationFilter {
         + prompt.length();
     }
     return consoleArea.getText().substring(lineStartLocation);
+  }
+  
+  public void undoLastStatement() {
+    commandListManager.removePreviousStatement();
   }
 
   // Refer : http://stackoverflow.com/a/2750099/2427542
