@@ -15,8 +15,6 @@ import processing.mode.java.JavaMode;
 public class REPLMode extends JavaMode {
   public REPLMode(Base base, File folder) {
     super(base, folder);
-
-    ConsoleButtons.setFolder(folder);
   }
 
   /**

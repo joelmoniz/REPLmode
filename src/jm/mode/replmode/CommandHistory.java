@@ -107,25 +107,4 @@ public class CommandHistory {
     }
   }
 
-  public String extractCommandBlock() {
-    StringBuilder cmdList = new StringBuilder();
-
-    for (int i = previousClearLine; i < commandHistList.size(); i++) {
-      cmdList.append(commandHistList.get(i));
-
-      if (i != commandHistList.size()) {
-        cmdList.append('\n');
-      }
-    }
-    return cmdList.toString();
-  }
-
-  public String toSketch() {
-    StringBuilder sketchCode = new StringBuilder();
-    sketchCode.append("void setup() {\n");
-    sketchCode.append(extractCommandBlock());
-    sketchCode.append("\n}\n\nvoid draw() {}");
-    System.out.println(sketchCode.toString());
-    return sketchCode.toString();
-  }
 }
