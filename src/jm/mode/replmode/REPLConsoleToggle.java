@@ -23,104 +23,107 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class REPLConsoleToggle extends JPanel implements MouseListener {
-	public static final String CONSOLE = "Console", REPL = "REPL";
+  public static final String CONSOLE = "Console", REPL = "REPL";
 
-	private boolean toggleText = true;
-	private boolean toggleBG = true;
+  private boolean toggleText = true;
 
-	/**
-	 * Height of the component
-	 */
-	protected int height;
-	protected REPLEditor editor;
-	protected String buttonName;
+  private boolean toggleBG = true;
 
-	public REPLConsoleToggle(REPLEditor editor, String buttonName, int height) {
-		this.editor = editor;
-		this.height = height;
-		this.buttonName = buttonName;
-	}
+  /**
+   * Height of the component
+   */
+  protected int height;
 
-	public Dimension getPreferredSize() {
-		return new Dimension(70, height);
-	}
+  protected REPLEditor editor;
 
-	public Dimension getMinimumSize() {
-		return getPreferredSize();
-	}
+  protected String buttonName;
 
-	public Dimension getMaximumSize() {
-		return getPreferredSize();
-	}
+  public REPLConsoleToggle(REPLEditor editor, String buttonName, int height) {
+    this.editor = editor;
+    this.height = height;
+    this.buttonName = buttonName;
+  }
 
-	public void paintComponent(Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+  public Dimension getPreferredSize() {
+    return new Dimension(70, height);
+  }
 
-		// On mouse hover, text and background color are changed.
-		if (toggleBG) {
-			g.setColor(new Color(0xff9DA7B0));
-			g.fillRect(0, 0, this.getWidth(), this.getHeight());
-			g.setColor(new Color(0xff29333D));
-			g.fillRect(0, 0, 4, this.getHeight());
-			g.setColor(Color.BLACK);
-		} else {
-			g.setColor(Color.DARK_GRAY);
-			g.fillRect(0, 0, this.getWidth(), this.getHeight());
-			g.setColor(new Color(0xff29333D));
-			g.fillRect(0, 0, 4, this.getHeight());
-			g.setColor(Color.WHITE);
-		}
+  public Dimension getMinimumSize() {
+    return getPreferredSize();
+  }
 
-		g.drawString(buttonName, getWidth() / 2 + 2 // + 2 is a offset
-				- getFontMetrics(getFont()).stringWidth(buttonName) / 2,
-				this.getHeight() - 6);
-		if (drawMarker) {
-			g.setColor(markerColor);
-			g.fillRect(4, 0, 2, this.getHeight());
-		}
-	}
+  public Dimension getMaximumSize() {
+    return getPreferredSize();
+  }
 
-	boolean drawMarker = false;
-	protected Color markerColor;
+  public void paintComponent(Graphics g) {
+    Graphics2D g2d = (Graphics2D) g;
+    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-	public void updateMarker(boolean value, Color color) {
-		drawMarker = value;
-		markerColor = color;
-		repaint();
-	}
+    // On mouse hover, text and background color are changed.
+    if (toggleBG) {
+      g.setColor(new Color(0xff9DA7B0));
+      g.fillRect(0, 0, this.getWidth(), this.getHeight());
+      g.setColor(new Color(0xff29333D));
+      g.fillRect(0, 0, 4, this.getHeight());
+      g.setColor(Color.BLACK);
+    } else {
+      g.setColor(Color.DARK_GRAY);
+      g.fillRect(0, 0, this.getWidth(), this.getHeight());
+      g.setColor(new Color(0xff29333D));
+      g.fillRect(0, 0, 4, this.getHeight());
+      g.setColor(Color.WHITE);
+    }
 
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
+    g.drawString(buttonName, getWidth() / 2 + 2 // + 2 is a offset
+                     - getFontMetrics(getFont()).stringWidth(buttonName) / 2,
+                 this.getHeight() - 6);
+    if (drawMarker) {
+      g.setColor(markerColor);
+      g.fillRect(4, 0, 2, this.getHeight());
+    }
+  }
 
-		this.repaint();
-		try {
-			editor.showConsoleOrREPL(buttonName);
-		} catch (Exception e) {
-			System.out.println(e);
-			// e.printStackTrace();
-		}
-		toggleText = !toggleText;
-	}
+  boolean drawMarker = false;
 
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		toggleBG = !toggleBG;
-		this.repaint();
-	}
+  protected Color markerColor;
 
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		toggleBG = !toggleBG;
-		this.repaint();
-	}
+  public void updateMarker(boolean value, Color color) {
+    drawMarker = value;
+    markerColor = color;
+    repaint();
+  }
 
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-	}
+  @Override
+  public void mouseClicked(MouseEvent arg0) {
 
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-	}
+    this.repaint();
+    try {
+      editor.showConsoleOrREPL(buttonName);
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+    toggleText = !toggleText;
+  }
+
+  @Override
+  public void mouseEntered(MouseEvent arg0) {
+    toggleBG = !toggleBG;
+    this.repaint();
+  }
+
+  @Override
+  public void mouseExited(MouseEvent arg0) {
+    toggleBG = !toggleBG;
+    this.repaint();
+  }
+
+  @Override
+  public void mousePressed(MouseEvent arg0) {
+  }
+
+  @Override
+  public void mouseReleased(MouseEvent arg0) {
+  }
 }

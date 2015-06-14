@@ -26,175 +26,179 @@ import processing.app.EditorConsole;
 // TODO: Make it easier to add buttons!
 @SuppressWarnings("serial")
 public class ConsoleButtons extends JPanel implements MouseListener,
-		MouseMotionListener {
+    MouseMotionListener {
 
-	public static final String CLEAR = "Clear";
+  public static final String CLEAR = "Clear";
 
-	protected Image clear_bn_reg, clear_bn_hov;
+  protected Image clear_bn_reg, clear_bn_hov;
 
-	private static File folder;
+  private static File folder;
 
-	protected static final String BASE_LOCN = "console_buttons/";
-	protected static final String CLEAR_REG = BASE_LOCN + "clear_icon_reg.png";
-	protected static final String CLEAR_HOV = BASE_LOCN + "clear_icon_hov.png";
+  protected static final String BASE_LOCN = "console_buttons/";
 
-	/**
-	 * Boolean to see if the mouse is hovered on the button
-	 */
-	private boolean toggleBG = true;
+  protected static final String CLEAR_REG = BASE_LOCN + "clear_icon_reg.png";
 
-	protected int height, width, totalWidth;
+  protected static final String CLEAR_HOV = BASE_LOCN + "clear_icon_hov.png";
 
-	protected String buttonName;
+  /**
+   * Boolean to see if the mouse is hovered on the button
+   */
+  private boolean toggleBG = true;
 
-	protected EditorConsole console;
-	protected REPLConsolePane replConsole;
+  protected int height, width, totalWidth;
 
-	public ConsoleButtons(String buttonName, int height, EditorConsole console,
-			REPLConsolePane replConsole) {
-		this.height = height;
-		width = height;
-		totalWidth = height + 4 + getFontMetrics(getFont()).stringWidth(CLEAR)
-				+ 4;
-		this.buttonName = buttonName;
+  protected String buttonName;
 
-		this.console = console;
-		this.replConsole = replConsole;
-	}
+  protected EditorConsole console;
 
-	public Dimension getPreferredSize() {
-		return new Dimension(totalWidth, height); // buttons are perfectly
-													// square
-	}
+  protected REPLConsolePane replConsole;
 
-	public Dimension getMinimumSize() {
-		return getPreferredSize();
-	}
+  public ConsoleButtons(String buttonName, int height, EditorConsole console,
+                        REPLConsolePane replConsole) {
+    this.height = height;
+    width = height;
+    totalWidth = height + 4 + getFontMetrics(getFont()).stringWidth(CLEAR) + 4;
+    this.buttonName = buttonName;
 
-	public Dimension getMaximumSize() {
-		return getPreferredSize();
-	}
+    this.console = console;
+    this.replConsole = replConsole;
+  }
 
-	public void paintComponent(Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+  public Dimension getPreferredSize() {
+    return new Dimension(totalWidth, height); // buttons are perfectly
+    // square
+  }
 
-		loadIcons();
-		if (toggleBG) {
-			if (clear_bn_reg != null) {
-				g.drawImage(clear_bn_reg, 0, 0, height, width, null);
-				g.setColor(new Color(0xff29333D));
-				g.fillRect(width, 0, totalWidth - width, height);
-			} else {
-				System.out.println("clear_bn_reg null!");
-			}
-		} else {
-			if (clear_bn_hov != null) {
-				g.drawImage(clear_bn_hov, 0, 0, height, width, null);
-				g.setColor(new Color(0xff29333D));
-				g.fillRect(width, 0, totalWidth - width, height);
-				g.setColor(Color.WHITE);
-				g.drawString(CLEAR, width + 5, height - height / 2
-						+ getFontMetrics(getFont()).getHeight() / 3);
-			} else {
-				System.out.println("clear_bn_hov null!");
-			}
-		}
-		if (drawMarker) {
-			g.setColor(markerColor);
-			g.fillRect(4, 0, 2, this.getHeight());
-		}
-	}
+  public Dimension getMinimumSize() {
+    return getPreferredSize();
+  }
 
-	boolean drawMarker = false;
-	protected Color markerColor;
+  public Dimension getMaximumSize() {
+    return getPreferredSize();
+  }
 
-	public void updateMarker(boolean value, Color color) {
-		drawMarker = value;
-		markerColor = color;
-		repaint();
-	}
+  public void paintComponent(Graphics g) {
+    Graphics2D g2d = (Graphics2D) g;
+    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-	private void loadIcons() {
-		try {
-			clear_bn_reg = loadImage(CLEAR_REG);
-			clear_bn_hov = loadImage(CLEAR_HOV);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    loadIcons();
+    if (toggleBG) {
+      if (clear_bn_reg != null) {
+        g.drawImage(clear_bn_reg, 0, 0, height, width, null);
+        g.setColor(new Color(0xff29333D));
+        g.fillRect(width, 0, totalWidth - width, height);
+      } else {
+        System.out.println("clear_bn_reg null!");
+      }
+    } else {
+      if (clear_bn_hov != null) {
+        g.drawImage(clear_bn_hov, 0, 0, height, width, null);
+        g.setColor(new Color(0xff29333D));
+        g.fillRect(width, 0, totalWidth - width, height);
+        g.setColor(Color.WHITE);
+        g.drawString(CLEAR, width + 5,
+                     height - height / 2
+                         + getFontMetrics(getFont()).getHeight() / 3);
+      } else {
+        System.out.println("clear_bn_hov null!");
+      }
+    }
+    if (drawMarker) {
+      g.setColor(markerColor);
+      g.fillRect(4, 0, 2, this.getHeight());
+    }
+  }
 
-	/**
-	 * Get an image object from the theme folder. Taken as is from
-	 * processing.app.Mode
-	 */
-	public Image loadImage(String filename) {
-		File file = new File(folder, filename);
-		if (!file.exists()) {
-			return null;
-		}
-		return new ImageIcon(file.getAbsolutePath()).getImage();
-	}
+  boolean drawMarker = false;
 
-	public static void setFolder(File folder_in) {
-		folder = folder_in;
-	}
+  protected Color markerColor;
 
-	private void clearConsoles() {
-		console.clear();
-		replConsole.clear();
-	}
+  public void updateMarker(boolean value, Color color) {
+    drawMarker = value;
+    markerColor = color;
+    repaint();
+  }
 
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		int x = arg0.getX();
-		int y = arg0.getY();
-		if (x < width && x > 0 && y < height && y > 0)
-			clearConsoles();
-	}
+  private void loadIcons() {
+    try {
+      clear_bn_reg = loadImage(CLEAR_REG);
+      clear_bn_hov = loadImage(CLEAR_HOV);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		int x = arg0.getX();
-		int y = arg0.getY();
-		if (x < width && x > 0 && y < height && y > 0) {
-			toggleBG = false;
-		}
-		this.repaint();
-	}
+  /**
+   * Get an image object from the theme folder. Taken as is from
+   * processing.app.Mode
+   */
+  public Image loadImage(String filename) {
+    File file = new File(folder, filename);
+    if (!file.exists()) {
+      return null;
+    }
+    return new ImageIcon(file.getAbsolutePath()).getImage();
+  }
 
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		toggleBG = true;
-		this.repaint();
-	}
+  public static void setFolder(File folder_in) {
+    folder = folder_in;
+  }
 
-	@Override
-	public void mousePressed(MouseEvent e) {
+  private void clearConsoles() {
+    console.clear();
+    replConsole.clear();
+  }
 
-	}
+  @Override
+  public void mouseClicked(MouseEvent arg0) {
+    int x = arg0.getX();
+    int y = arg0.getY();
+    if (x < width && x > 0 && y < height && y > 0)
+      clearConsoles();
+  }
 
-	@Override
-	public void mouseReleased(MouseEvent e) {
+  @Override
+  public void mouseEntered(MouseEvent arg0) {
+    int x = arg0.getX();
+    int y = arg0.getY();
+    if (x < width && x > 0 && y < height && y > 0) {
+      toggleBG = false;
+    }
+    this.repaint();
+  }
 
-	}
+  @Override
+  public void mouseExited(MouseEvent arg0) {
+    toggleBG = true;
+    this.repaint();
+  }
 
-	@Override
-	public void mouseDragged(MouseEvent arg0) {
+  @Override
+  public void mousePressed(MouseEvent e) {
 
-	}
+  }
 
-	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		int x = arg0.getX();
-		int y = arg0.getY();
-		if (x < width && x > 0 && y < height && y > 0) {
-			toggleBG = false;
-		} else
-			toggleBG = true;
+  @Override
+  public void mouseReleased(MouseEvent e) {
 
-		this.repaint();
-	}
+  }
+
+  @Override
+  public void mouseDragged(MouseEvent arg0) {
+
+  }
+
+  @Override
+  public void mouseMoved(MouseEvent arg0) {
+    int x = arg0.getX();
+    int y = arg0.getY();
+    if (x < width && x > 0 && y < height && y > 0) {
+      toggleBG = false;
+    } else
+      toggleBG = true;
+
+    this.repaint();
+  }
 
 }
