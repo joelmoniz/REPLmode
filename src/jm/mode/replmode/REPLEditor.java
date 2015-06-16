@@ -1,11 +1,14 @@
 package jm.mode.replmode;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JPanel;
 
 import processing.app.Base;
+import processing.app.EditorFooter;
 import processing.app.EditorState;
 import processing.app.Mode;
 import processing.app.Preferences;
@@ -77,6 +80,27 @@ public class REPLEditor extends JavaEditor {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  /**
+   * Method to add a footer at the base of the editor with tabs to display the
+   * Console, Errors pane and the REPL Console.
+   */
+  @Override
+  public EditorFooter createFooter() {
+    replConsole = new REPLConsolePane(this);
+
+    EditorFooter footer = super.createFooter();
+    footer.addPanel("REPL", replConsole);
+
+    replConsole.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentShown(ComponentEvent e) {
+        replConsole.requestFocus();
+      }
+    });
+
+    return footer;
   }
 
   protected void prepareInitialREPLRun(String replCode) {
