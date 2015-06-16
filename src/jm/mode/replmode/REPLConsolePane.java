@@ -17,26 +17,29 @@ import processing.app.Preferences;
  * 
  * @author Joel Ruben Antony Moniz
  */
+
+// TODO : Add colorization
+// DONE : Add prompt
+// DONE : Ensure only appropriate parts are modifiable
+// DONE: Set font based on user preference
+// TODO: Update font as soon as user changes it in preferences window
+
 public class REPLConsolePane extends JPanel {
   private static final long serialVersionUID = -7546489577830751456L;
 
   private static final String PROMPT = ">> ";
-
   private static final String PROMPT_CONTINUATION = "...    ";
 
   protected JScrollPane replScrollPane;
-
   protected JTextArea replInputArea;
-
   protected CommandPromptPane replInputPaneFilter;
 
   public REPLConsolePane(REPLEditor editor) {
 
     replInputArea = new JTextArea(PROMPT);
-
+    
     // Set navigation filter
-    replInputPaneFilter = new CommandPromptPane(PROMPT, PROMPT_CONTINUATION,
-                                                editor, replInputArea);
+    replInputPaneFilter = new CommandPromptPane(PROMPT, PROMPT_CONTINUATION, editor, replInputArea);
     replInputArea.setNavigationFilter(replInputPaneFilter);
 
     // Appearance-related
@@ -64,6 +67,10 @@ public class REPLConsolePane extends JPanel {
     replInputArea.requestFocusInWindow();
   }
 
+  protected void clear() {
+    replInputArea.setText(PROMPT);
+  }
+  
   public CommandPromptPane getCommandPromptPane() {
     return replInputPaneFilter;
   }
