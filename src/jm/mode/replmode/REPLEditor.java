@@ -68,14 +68,13 @@ public class REPLEditor extends JavaEditor {
       final File tempFile = new File(subdir, subdir.getName() + ".pde");//File.createTempFile("tmp", ".pde", subdir);
       tempFile.createNewFile();
       replTempSketch = new Sketch(tempFile.getAbsolutePath(), this);
-
-      // These few lines are needed to added back the document listeners, since otherwise
-      // the line creating a new sketch for replTempSketch messes with the main sketch's
-      // document listeners- the PDE thinks that it has switched to a new editor, so
-      // the document listeners get added there
-      for (final SketchCode sc : REPLEditor.this.getSketch().getCode()) {
-        setCode(sc);
-      }
+      
+      /*
+       * This is needed to add back the document listeners and make the editor
+       * show the correct code, since otherwise the line creating a new sketch
+       * for replTempSketch make the PDE think that it has switched to a new editor
+       */
+      this.sketch.reload();
 
     } catch (IOException e) {
       e.printStackTrace();
