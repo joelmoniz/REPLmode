@@ -238,7 +238,7 @@ public class CommandList {
     code.append(size.getSizeStatement());
     code.append("\n}\n\n");
 
-    if (!commandList.isEmpty()) {
+//    if (!commandList.isEmpty()) {
       code.append("void draw() {\n");
       Iterator<String> it = commandList.iterator();
       while (it.hasNext()) {
@@ -246,7 +246,7 @@ public class CommandList {
         code.append('\n');
       }
       code.append('}');
-    }
+//    }
     System.out.println(formatter.format(code.toString()));
     return formatter.format(code.toString());
   }

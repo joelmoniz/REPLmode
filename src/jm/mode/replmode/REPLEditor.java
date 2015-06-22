@@ -50,6 +50,10 @@ public class REPLEditor extends JavaEditor {
   protected File untitledFolderLocation;
 
   Runner replRuntime;
+  REPLRunner runtime;
+  
+  File srcFolder;
+  File binFolder;
 
   REPLMode replMode;
 
@@ -57,6 +61,8 @@ public class REPLEditor extends JavaEditor {
     super(base, path, state, mode);
 
     replMode = (REPLMode) mode;
+    replRuntime = null;
+    runtime = null;
 
     try {
       untitledFolderLocation = Base.createTempFolder("untitled", "repl", null);
@@ -68,6 +74,9 @@ public class REPLEditor extends JavaEditor {
       final File tempFile = new File(subdir, subdir.getName() + ".pde");//File.createTempFile("tmp", ".pde", subdir);
       tempFile.createNewFile();
       replTempSketch = new Sketch(tempFile.getAbsolutePath(), this);
+      
+      srcFolder = replTempSketch.makeTempFolder();
+      binFolder = replTempSketch.makeTempFolder();
       
       /*
        * This is needed to add back the document listeners and make the editor
@@ -137,22 +146,33 @@ public class REPLEditor extends JavaEditor {
 
   public Runner handleREPLRun(Sketch sketch, RunnerListener listener)
       throws SketchException {
-    return handleLaunch(sketch, listener, false);
+    return handleREPLLaunch(sketch, listener, false);
   }
 
   /** Handles the standard Java "Run" or "Present" */
-  public Runner handleLaunch(Sketch sketch, RunnerListener listener,
+  public REPLRunner handleREPLLaunch(Sketch sketch, RunnerListener listener,
                              final boolean present) throws SketchException {
     JavaBuild build = new JavaBuild(sketch);
-    String appletClassName = build.build(false);
+    String appletClassName = build.build(srcFolder, binFolder, false);
     if (appletClassName != null) {
-      final Runner runtime = new Runner(build, listener);
-      new Thread(new Runnable() {
-        public void run() {
-          runtime.launch(present); // this blocks until finished
-//          replConsole.requestFocus();
-        }
-      }).start();
+      if (runtime == null) {
+        runtime = new REPLRunner(build, listener);
+        System.out.println("Why here?");
+        new Thread(new Runnable() {
+          public void run() {
+            runtime.launchREPL(); // this blocks until finished
+//            replConsole.requestFocus();
+          }
+        }).start();
+      }
+   /*   else {
+        new Thread(new Runnable() {
+          public void run() {
+            runtime.recompileREPL(); // this blocks until finished
+  //          replConsole.requestFocus();
+          }
+        }).start();
+      }*/
       return runtime;
     }
     return null;
@@ -166,7 +186,7 @@ public class REPLEditor extends JavaEditor {
 
     try {
       if (replRuntime != null) {
-        replRuntime.close(); // kills the window
+//        replRuntime.close(); // kills the window
         replRuntime = null;
       }
     } catch (Exception e) {
