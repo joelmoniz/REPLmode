@@ -112,7 +112,8 @@ public class REPLEditor extends JavaEditor {
   }
 
   protected void prepareInitialREPLRun(String replCode) {
-    handleREPLStop();
+    // We no longer want the window to close
+//    handleREPLStop();
 //    internalCloseRunner();
     statusEmpty();
 
@@ -156,15 +157,14 @@ public class REPLEditor extends JavaEditor {
     String appletClassName = build.build(srcFolder, binFolder, false);
     if (appletClassName != null) {
       if (runtime == null) {
+//        System.out.println("VM status at start: " + (runtime.vm() == null));
         runtime = new REPLRunner(build, listener);
-        System.out.println("Why here?");
-        new Thread(new Runnable() {
-          public void run() {
-            runtime.launchREPL(); // this blocks until finished
-//            replConsole.requestFocus();
-          }
-        }).start();
       }
+      new Thread(new Runnable() {
+        public void run() {
+          runtime.launchREPL(); // this blocks until finished
+        }
+      }).start();
    /*   else {
         new Thread(new Runnable() {
           public void run() {
@@ -186,7 +186,7 @@ public class REPLEditor extends JavaEditor {
 
     try {
       if (replRuntime != null) {
-//        replRuntime.close(); // kills the window
+        replRuntime.close(); // kills the window
         replRuntime = null;
       }
     } catch (Exception e) {
