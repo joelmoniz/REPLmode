@@ -1,34 +1,12 @@
-<?xml version="1.0"?>
-<project name="REPLMode" default="install" basedir="./">
-    <description>Mode for providing an REPL console in Processing 2.0+</description>
+<project name="REPLMode" default="install" basedir="../">
+    <description>Mode for providing an REPL console in Processing 3.0+</description>
 
-    <!-- name of your mode package (will be used as dir name) -->
-	<!-- note, this must be the same name as your mode subclass, AND the same name as this build project. -->
-    <property name="lib.name" 	value="REPLMode" />
-
-    <!-- version -->
-    <property name="release"	value="0.1" />
-
-    <!-- java version -->
-    <property name="java.target.version" value="1.8" />
-
-    <!-- location of processing jars (core.jar, pde.jar, ..) -->
-    <property name="processing.classes.core" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\core\\library" />
-    <property name="processing.classes.pde" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\lib" />
-    <property name="processing.classes.javamode" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\java\\mode" />
-    
-    <!-- folder to install modes in (probably a folder called "modes" inside your sketchbook folder) -->
-    <property name="processing.modes" location="${user.home}/Documents/Processing/modes"/>
-
-    <!-- path to your processing build file. -->
-    <property name="processing.build" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\build.xml"/>
-
-    <!-- path to your processing executable. -->
-    <property name="processing.executable" location="C:\\Users\\Joel\\Documents\\Code\\p5\\processing\\build\\windows\\work\\processing.exe"/>
+    <!-- All required modification (setting of paths, etc.) are to be done in the build.properties file
+         when building the REPL Mode -->
+    <property file="./resources/build.properties" />
 
 
-
-
+    <!-- Nothing below this line required modification -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - -->
     <property name="src" 		value="src" />
     <property name="build" 		value="build" />
