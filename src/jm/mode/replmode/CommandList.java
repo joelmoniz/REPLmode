@@ -34,7 +34,7 @@ public class CommandList {
 
   public static final String INIT_COMMAND = "init";
 
-  public static final String REINIT_COMMAND = "reinit";
+  public static final String RESIZE_COMMAND = "resize";
 
   public static final String UNDO_COMMAND = "undo";
 
@@ -43,7 +43,7 @@ public class CommandList {
   public static final String PRINT_COMMAND = "print";
 
   public static final String[] REPL_COMMAND_SET = {
-    CLEAR_COMMAND, INIT_COMMAND, REINIT_COMMAND, UNDO_COMMAND, REDO_COMMAND,
+    CLEAR_COMMAND, INIT_COMMAND, RESIZE_COMMAND, UNDO_COMMAND, REDO_COMMAND,
     PRINT_COMMAND };
 
   public static final String SIZE_PD2 = "P2D";

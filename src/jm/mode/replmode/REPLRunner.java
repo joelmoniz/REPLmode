@@ -27,9 +27,9 @@ public class REPLRunner extends Runner {
     isWindowVisible = false;
   }
 
-  public void launchREPL() {
+  public void launchREPL(boolean refresh) {
     // I <3 short circuiting
-    if (!isWindowVisible && launchREPLVirtualMachine()) {
+    if ((!isWindowVisible || refresh) && launchREPLVirtualMachine()) {
       isWindowVisible = true;
       generateTrace();
       isWindowVisible = false;

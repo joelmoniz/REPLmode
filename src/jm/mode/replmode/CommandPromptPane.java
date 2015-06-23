@@ -124,7 +124,7 @@ public class CommandPromptPane extends NavigationFilter {
           boolean error = commandListManager.addStatement(command);
           component.replaceSelection(prompt);
           prefixLength = prompt.length();
-          runTempSketch(error);
+          runTempSketch(error, false);
         }
 
         try {
@@ -150,7 +150,7 @@ public class CommandPromptPane extends NavigationFilter {
         component.replaceSelection(prompt);
         prefixLength = prompt.length();
         isContinuing = false;
-        runTempSketch(error);
+        runTempSketch(error, false);
       } else {
         component.replaceSelection(promptContinuation);
         prefixLength = promptContinuation.length();
@@ -169,6 +169,7 @@ public class CommandPromptPane extends NavigationFilter {
 
   protected void handleREPLModeCommand(String command, JTextArea component) {
     boolean isDone = true;
+    boolean refresh = false;
     String firstCommandWord = command.split(" ")[0];
     if (command.equals(CommandList.CLEAR_COMMAND)) {
       // TODO: Or is selecting everything and then using replaceSelection() better?
@@ -188,10 +189,11 @@ public class CommandPromptPane extends NavigationFilter {
       try {
         int cp = consoleArea.getCaretPosition();
         rowStartPosition = Utilities.getRowStart(consoleArea, cp);
+        refresh = true;
       } catch (BadLocationException e1) {
         e1.printStackTrace();
       }
-    } else if (firstCommandWord.equals(CommandList.REINIT_COMMAND)) {
+    } else if (firstCommandWord.equals(CommandList.RESIZE_COMMAND)) {
       if (isContinuing) {
         printStatusMessage("Oops! REPL Mode is in the midst of another command (block)");
         isDone = false;
@@ -199,6 +201,7 @@ public class CommandPromptPane extends NavigationFilter {
       } else {
         isDone = handleInit(command, true);
         component.replaceSelection(prompt);
+        refresh = true;
       }
       try {
         rowStartPosition = Math.max(rowStartPosition, Utilities
@@ -256,7 +259,7 @@ public class CommandPromptPane extends NavigationFilter {
 
     prefixLength = prompt.length();
 
-    runTempSketch(!isDone); // since !isDone ==> isError
+    runTempSketch(!isDone, refresh); // since !isDone ==> isError
 
   }
 
@@ -411,11 +414,11 @@ public class CommandPromptPane extends NavigationFilter {
     return FN_NAME_PATTERN.matcher(fn).find();
   }
 
-  protected void runTempSketch(boolean error) {
+  protected void runTempSketch(boolean error, boolean refresh) {
     if (replEditor != null && !error) {
       try {
         String code = commandListManager.getREPLSketchCode();
-        replEditor.handleREPLRun(code);
+        replEditor.handleREPLRun(code, refresh);
       } catch (Exception exc) {
         exc.printStackTrace();
       }

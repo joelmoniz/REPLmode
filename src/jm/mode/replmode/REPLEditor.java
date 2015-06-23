@@ -129,40 +129,37 @@ public class REPLEditor extends JavaEditor {
     replTempSketch.getCurrentCode().setProgram(replCode);
   }
 
-  public void handleREPLRun(String code) {
+  public void handleREPLRun(String code, boolean refresh) {
     new Thread(new Runnable() {
       public void run() {
         // TODO: Check how this is to be called, and where
         prepareInitialREPLRun(code);
         try {
-          replRuntime = handleREPLRun(replTempSketch, REPLEditor.this);
+          replRuntime = handleREPLLaunch(replTempSketch, REPLEditor.this, refresh);
         } catch (Exception e) {
           replConsole.getCommandPromptPane().printStatusException(e);
           replConsole.getCommandPromptPane().undoLastStatement();
-          replConsole.getCommandPromptPane().runTempSketch(false);
+//          No longer needed, since window doesn't close
+//          replConsole.getCommandPromptPane().runTempSketch(false, false);
         }
       }
     }).start();
   }
 
-  public Runner handleREPLRun(Sketch sketch, RunnerListener listener)
-      throws SketchException {
-    return handleREPLLaunch(sketch, listener, false);
-  }
-
   /** Handles the standard Java "Run" or "Present" */
   public REPLRunner handleREPLLaunch(Sketch sketch, RunnerListener listener,
-                             final boolean present) throws SketchException {
+                             final boolean refresh) throws SketchException {
     JavaBuild build = new JavaBuild(sketch);
     String appletClassName = build.build(srcFolder, binFolder, false);
     if (appletClassName != null) {
-      if (runtime == null) {
+      if (runtime == null || refresh) {
 //        System.out.println("VM status at start: " + (runtime.vm() == null));
+        handleREPLStop();
         runtime = new REPLRunner(build, listener);
       }
       new Thread(new Runnable() {
         public void run() {
-          runtime.launchREPL(); // this blocks until finished
+          runtime.launchREPL(refresh); // this blocks until finished
         }
       }).start();
    /*   else {
