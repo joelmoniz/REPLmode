@@ -15,24 +15,24 @@ UI
 
 Usage
 =====
-[ ] Add in simple drawing functions
+[X] Add in simple drawing functions
 [ ] Add in miscellaneous command words specific to REPL Mode:
     [X] clear
     	[X] Ensure that init properties are copied over when clear is done
-    [ ] init w h renderer (which serves as a replacement to size(w,h,renderer))
-    	[ ] prevent size() from being called directly
+    [X] init w h renderer (which serves as a replacement to size(w,h,renderer))
+    	[X] prevent size() from being called directly
     	[X] allow init to be called again, it signifying starting completely from scratch
     	[X] allow 3 types of calls:
     		[X] init
     		[X] init w h
     		[X] init w h renderer
-    [ ] reinit w h renderer (which is effectively like making the sketch larger in size 
+    [X] reinit w h renderer (which is effectively like making the sketch larger in size 
     	without changing any of the already existing commands)
     	[X] allow 3 types of calls:
     		[X] reinit
     		[X] reinit w h
     		[X] reinit w h renderer
-    	[ ] Rename reinit with the brand new, ultra-creative name "resize" :/
+    	[X] Rename reinit with the brand new, ultra-creative name "resize" :/
     		Now how on earth didn't I think of that before...
 	[X] undo x (undo the last x non-undo/redo statements)
 	[X] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo)
@@ -44,7 +44,7 @@ Usage
     [ ] help
     [ ] man
     [ ] license
-[ ] Add in more complex constructs, like variable declarations, ifs and loops
+[X] Add in more complex constructs, like variable declarations, ifs and loops
 [ ] Allow import statements
     [ ] This would include handling PDF in init
 [ ] Should clear just clear the console? And the user use init when the sketch needs to be cleared?
@@ -54,14 +54,19 @@ Bugs
 [X] JavaMode errors don't work. Oh oh :O
 [X] Arrow keys don't move right after clear is run
 [ ] Uncaught exceptions (probably, even hopefully) run amok
-[ ] REPL sketch sometimes just doesn't open, especially just after PDE is started
+[X] REPL sketch sometimes just doesn't open, especially just after PDE is started
+[ ] shift+home>backspace doesn't work, while shift+(home>right arrow)>backspace does- 
+	offset error probably?
 
 Internals
 =========
-[ ] Have errors checked line-by-line
-[ ] Hot-swap without re-opening new sketches
+[ ] Error checking
+	[X] implement basic error checking
+	[ ] Have errors checked line-by-line when blocks of code are entered
+	[ ] Throw a list of all errors in each line
+[X] Hot-swap without re-opening new sketches
 [ ] Delete temporary folder used by REPL Mode on exit
-[ ] Use a noLoop() ?
+[X] Use a noLoop() ?
 
 Readme
 ======
@@ -71,10 +76,12 @@ Readme
 
 Code Style
 ==========
-[ ] Refactor the code. All of it.
-    [ ] Remove the dozen-odd test functions and functions no longer in use
-    [ ] There was a now unused class in there. Remove it after ensuring it is, indeed, unused.
-    [ ] Remove all the junk commented out code.
+[X] Refactor the code. All of it.
+    [X] Remove the dozen-odd test functions and functions no longer in use
+    [X] There was a now unused class in there. Remove it after ensuring it is, indeed, unused.
+    [X] Remove all the junk commented out code.
+[ ] Look at methods such as REPLEditor/handleREPLLaunch and REPLRunner/build and find the best
+	place for them
 [ ] Check out how enter and delete keys are handled in CommandPromptPane class
 [ ] Check out where best to handle the `clear` command actually clearing the console
 
