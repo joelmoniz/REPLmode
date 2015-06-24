@@ -1,6 +1,9 @@
 package jm.mode.replmode;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 
 import com.sun.jdi.connect.AttachingConnector;
@@ -18,6 +21,7 @@ import processing.mode.java.runner.Runner;
 public class REPLRunner extends Runner {
   String portStr;
   boolean isWindowVisible;
+  boolean hasFailedLoad;
 
   public REPLRunner(JavaBuild build, RunnerListener listener)
       throws SketchException {
@@ -44,13 +48,24 @@ public class REPLRunner extends Runner {
     
     int port = 8000 + (int) (Math.random() * 1000);
     portStr = String.valueOf(port);
-//    System.out.println("vm is: " + );
     String[] vmParams = getMachineParams();
     String[] sketchParams = getSketchParams(false);    
 
+    String hotSwapArg = "";
+    URL url = REPLRunner.class.getProtectionDomain().getCodeSource().getLocation();
+    File currentDirectory = null;
+    try {
+      currentDirectory = new File(url.toURI());
+      hotSwapArg = "-javaagent:" + currentDirectory.getParentFile().getAbsolutePath() + "/hotswap-agent.jar=autoHotswap=true";
+      System.out.println(currentDirectory.getParentFile().getAbsolutePath());
+      hasFailedLoad = false;
+    } catch (URISyntaxException e2) {
+//      e2.printStackTrace();
+      System.err.println("The hot swapper is feeling a little sleepy right now. Don't worry- REPL Mode will try to wake it up");
+      hasFailedLoad = true;
+    }
     // Newer (Java 1.5+) version that uses JVMTI
     String jdwpArg = "-agentlib:jdwp=transport=dt_socket,address=" + portStr + ",server=y,suspend=y";
-    String hotSwapArg = /*"-XXaltjvm=dcevm */"-javaagent:C:\\Users\\Joel\\Documents\\Code\\p5\\REPLmode\\lib\\hotswap-agent.jar=autoHotswap=true";
     // Everyone works the same under Java 7 (also on OS X)
     String[] commandArgs = new String[] { Base.getJavaPath(), jdwpArg,hotSwapArg };
     System.out.println(Base.getJavaPath());
@@ -88,6 +103,9 @@ public class REPLRunner extends Runner {
     } catch (IllegalConnectorArgumentsException exc) {
       throw new Error("Internal error: " + exc);
     }
+  }
   
+  boolean isFailedLoad() {
+    return hasFailedLoad;
   }
 }

@@ -152,7 +152,7 @@ public class REPLEditor extends JavaEditor {
     JavaBuild build = new JavaBuild(sketch);
     String appletClassName = build.build(srcFolder, binFolder, false);
     if (appletClassName != null) {
-      if (runtime == null || refresh) {
+      if (runtime == null || refresh || runtime.isFailedLoad()) {
 //        System.out.println("VM status at start: " + (runtime.vm() == null));
         handleREPLStop();
         runtime = new REPLRunner(build, listener);
