@@ -513,28 +513,40 @@ public class CommandPromptPane extends NavigationFilter {
         mess = mess.substring(illString.length());
       }
 
-      int currPrefixLength = prefixLength;
-      prefixLength = 0;
-      int currPos = consoleArea.getCaretPosition();
-      isContinuing = false;
-      consoleArea.setSelectionStart(currPos - currPrefixLength);
-      consoleArea.setSelectionEnd(currPos);
-      printStatusMessage("Error: " + mess);
-      consoleArea.setCaretPosition(consoleArea.getText().length());
-      consoleArea.replaceSelection(prompt);
-      consoleArea.setCaretPosition(consoleArea.getText().length());
-      prefixLength = prompt.length();
-      try {
-        rowStartPosition = Math.max(rowStartPosition, Utilities
-            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
-      } catch (BadLocationException e1) {
-        e1.printStackTrace();
-      }
-      //rect(20,20,40,i);
+      printStatusError(mess);
     }
-//      e.printStackTrace();
+  }
+  
+  public void printStatusError(String mess) {
+    int currPrefixLength = prefixLength;
+    prefixLength = 0;
+    int currPos = consoleArea.getCaretPosition();
+    isContinuing = false;
+    consoleArea.setSelectionStart(currPos - currPrefixLength);
+    consoleArea.setSelectionEnd(currPos);
+    printStatusMessage("Error: " + mess);
+    consoleArea.setCaretPosition(consoleArea.getText().length());
+    consoleArea.replaceSelection(prompt);
+    consoleArea.setCaretPosition(consoleArea.getText().length());
+    prefixLength = prompt.length();
+    try {
+      rowStartPosition = Math.max(rowStartPosition, Utilities
+          .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+    } catch (BadLocationException e1) {
+      e1.printStackTrace();
+    }
   }
 
+  public void handleException(Exception e) {
+    printStatusException(e);
+    undoLastStatement();
+  }
+
+  public void handleException(String err) {
+    printStatusError(err);
+    undoLastStatement();
+  }
+  
   public String getLastLine() {
     // TODO: Is there a more efficient way of extracting the last line of code?
     int lineStartLocation;

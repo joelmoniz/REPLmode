@@ -137,13 +137,16 @@ public class REPLEditor extends JavaEditor {
         try {
           replRuntime = handleREPLLaunch(replTempSketch, REPLEditor.this, refresh);
         } catch (Exception e) {
-          replConsole.getCommandPromptPane().printStatusException(e);
-          replConsole.getCommandPromptPane().undoLastStatement();
+          replConsole.getCommandPromptPane().handleException(e);
 //          No longer needed, since window doesn't close
 //          replConsole.getCommandPromptPane().runTempSketch(false, false);
         }
       }
     }).start();
+  }
+  
+  public CommandPromptPane getCommandPromptPane() {
+    return replConsole.getCommandPromptPane();
   }
 
   /** Handles the standard Java "Run" or "Present" */
