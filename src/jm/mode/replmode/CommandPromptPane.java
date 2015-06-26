@@ -180,7 +180,8 @@ public class CommandPromptPane extends NavigationFilter {
       isContinuing = false;
       component.setText(prompt);
 
-      commandListManager.clear();
+      // Don't clear the screen and undo stack any more
+//      commandListManager.clear();
       rowStartPosition = 0;
 
     } else if (firstCommandWord.equals(CommandList.INIT_COMMAND)) {
@@ -217,6 +218,7 @@ public class CommandPromptPane extends NavigationFilter {
       } else {
         isDone = handleUndo(command, false);
         component.replaceSelection(prompt);
+        refresh = true;
       }
       try {
         rowStartPosition = Math.max(rowStartPosition, Utilities

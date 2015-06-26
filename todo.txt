@@ -47,7 +47,7 @@ Usage
 [X] Add in more complex constructs, like variable declarations, ifs and loops
 [ ] Allow import statements
     [ ] This would include handling PDF in init
-[ ] Should clear just clear the console? And the user use init when the sketch needs to be cleared?
+[X] Should clear just clear the console? And the user use init when the sketch needs to be cleared?
 
 Bugs
 ====

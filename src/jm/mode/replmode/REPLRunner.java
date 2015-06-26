@@ -104,7 +104,7 @@ public class REPLRunner extends Runner {
                       ((REPLEditor)editor).getCommandPromptPane();
                   if (errMsg.contains("/size_.html")) {
                     cmd.handleException("size() cannot be called from within" + 
-                        " the REPL Console. Please use init instead.");
+                        " the REPL Console. Please use init or resize instead.");
                   }
                   else {
                     cmd.handleException(errMsg);
