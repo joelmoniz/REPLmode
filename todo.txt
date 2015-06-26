@@ -70,8 +70,8 @@ Internals
 
 Readme
 ======
-[ ] Add build instructions
-[ ] Add usage instructions
+[X] Add build instructions
+[X] Add usage instructions
 [ ] Add a license file
 
 Code Style
