@@ -1,10 +1,11 @@
 package jm.mode.replmode;
 
+import static java.lang.Math.min;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Stack;
-import static java.lang.Math.min;
 
 import processing.mode.java.AutoFormat;
 
@@ -21,6 +22,8 @@ public class CommandList {
   ArrayList<String> commandList;
 
   ArrayList<String> continuingCommandList;
+  
+  ArrayList<String> importsList;
 
   Stack<String> undoStack;
 
@@ -101,6 +104,7 @@ public class CommandList {
     this.promptPane = promptPane;
     commandList = new ArrayList<>();
     continuingCommandList = new ArrayList<>();
+    importsList = new ArrayList<>();
     undoStack = new Stack<>();
     isUndoing = false;
     formatter = new AutoFormat();
@@ -160,6 +164,21 @@ public class CommandList {
   public void removePreviousStatement() {
     if (commandList != null && !commandList.isEmpty()) {
       commandList.remove(commandList.size() - 1);
+    }
+  }
+
+  public void addImportStatement(String stmt) {
+    if (size == null) {
+      promptPane.printStatusMessage("Nope. You'll need to run `init` first.");
+    } else {
+      importsList.add(stmt);
+    }
+    clearUndoStack();
+  }
+
+  public void removePreviousImportStatement() {
+    if (importsList != null && !importsList.isEmpty()) {
+      importsList.remove(importsList.size() - 1);
     }
   }
 
@@ -233,14 +252,23 @@ public class CommandList {
       return null;
     }
     StringBuilder code = new StringBuilder();
-
+    
+    Iterator<String> it = importsList.iterator();
+    while (it.hasNext()) {
+      code.append(it.next());
+      code.append('\n');
+    }
+    
+    if (!code.toString().isEmpty())
+      code.append('\n');
+    
     code.append("void setup() {\n");
     code.append(size.getSizeStatement());
     code.append("\n}\n\n");
 
 //    if (!commandList.isEmpty()) {
       code.append("void draw() {\n");
-      Iterator<String> it = commandList.iterator();
+      it = commandList.iterator();
       while (it.hasNext()) {
         code.append(it.next());
         code.append('\n');

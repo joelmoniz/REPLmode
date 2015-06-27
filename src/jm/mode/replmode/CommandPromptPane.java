@@ -2,7 +2,9 @@ package jm.mode.replmode;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.Arrays;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
@@ -14,6 +16,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.NavigationFilter;
 import javax.swing.text.Position;
 import javax.swing.text.Utilities;
+
+import processing.app.Base;
+import processing.app.Library;
+import processing.app.SketchException;
+import processing.core.PApplet;
 
 /**
  * Class responsible for setting up a NavigationFilter that makes a JTextArea
@@ -47,6 +54,11 @@ public class CommandPromptPane extends NavigationFilter {
   int openLeftCurlies;
 
   int rowStartPosition;
+  
+  final Pattern importPattern 
+    = Pattern.compile("((?:^\\s*))(import\\s+)((?:static\\s+)?\\S+)(\\s*;(?:\\s*$))");
+  final Pattern importInLinePattern
+    = Pattern.compile("((?:^|;)\\s*)(import\\s+)((?:static\\s+)?\\S+)(\\s*;)");
 
   public CommandPromptPane(String prompt, String promptContinuation,
                            REPLEditor editor, JTextArea component) {
@@ -116,8 +128,10 @@ public class CommandPromptPane extends NavigationFilter {
           .contains(firstCommandWord)) {
         handleREPLModeCommand(trimmedCommand, component);
       } else {
-
-        if (isContinuing || trimmedCommand.endsWith("{")
+        if (importInLinePattern.matcher(trimmedCommand).find()) {
+          handleImportStatement(trimmedCommand, component);
+        }
+        else if (isContinuing || trimmedCommand.endsWith("{")
             || trimmedCommand.endsWith(",")) {
           handleContinuingStatement(trimmedCommand, component);
         } else {
@@ -136,6 +150,51 @@ public class CommandPromptPane extends NavigationFilter {
       }
 
     }
+  }
+  
+  protected void handleImportStatement(String stmt, JTextArea component) {
+    if (isContinuing) {
+      printStatusMessage("Oops! REPL Mode is in the midst of another command (block)." +
+          " Can't import until that is done.");
+      component.replaceSelection(promptContinuation);
+      prefixLength = promptContinuation.length();
+    }
+    else if (importPattern.matcher(stmt).find()) {
+      if (importExists(stmt)) {
+        commandListManager.addImportStatement(stmt);
+      }
+      else {
+        printStatusMessage("Cannot find the library that import statement corresponds with.");
+      }
+      component.replaceSelection(prompt);
+      prefixLength = prompt.length();
+    }
+    else {
+      printStatusMessage("The import is a complex thing." +
+          " Please import a library in a stand-alone statement");
+      component.replaceSelection(prompt);
+      prefixLength = prompt.length();
+    }
+  }
+  
+  protected boolean importExists(String imprt) {
+    int dot = imprt.lastIndexOf('.');
+    String entry = (dot == -1) ? imprt : imprt.substring(0, dot);
+
+    entry = entry.trim().substring(6).trim();
+
+    // Try to get the library classpath and add it to the list
+      try {
+        Library library = replEditor.getMode().getLibrary(entry);
+        
+        if (library == null) {
+          return false;
+        }
+      } catch (SketchException e) {
+        e.printStackTrace();
+        return false;
+      }
+    return true;
   }
 
   protected void handleContinuingStatement(String command, JTextArea component) {
