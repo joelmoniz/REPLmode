@@ -2,6 +2,7 @@ package jm.mode.replmode;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
@@ -15,6 +16,10 @@ import processing.mode.java.JavaBuild;
 import processing.mode.java.runner.MessageSiphon;
 import processing.mode.java.runner.Runner;
 
+import com.sun.jdi.Field;
+import com.sun.jdi.ObjectReference;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.Value;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.Connector.Argument;
@@ -220,5 +225,76 @@ public class REPLRunner extends Runner {
   
   boolean isFailedLoad() {
     return hasFailedLoad;
+  }
+  
+  @Override
+  /**
+   * Overridden from Runner class for the only reason that Java doesn't 
+   * allow the static method handleCommonErrors() to be overridden... 
+   * Sigh..
+   */
+  public void exceptionEvent(ExceptionEvent event) {
+    ObjectReference or = event.exception();
+    ReferenceType rt = or.referenceType();
+    String exceptionName = rt.name();
+    //Field messageField = Throwable.class.getField("detailMessage");
+    Field messageField = rt.fieldByName("detailMessage");
+//    System.out.println("field " + messageField);
+    Value messageValue = or.getValue(messageField);
+//    System.out.println("mess val " + messageValue);
+
+    //"java.lang.ArrayIndexOutOfBoundsException"
+    int last = exceptionName.lastIndexOf('.');
+    String message = exceptionName.substring(last + 1);
+    if (messageValue != null) {
+      String messageStr = messageValue.toString();
+      if (messageStr.startsWith("\"")) {
+        messageStr = messageStr.substring(1, messageStr.length() - 1);
+      }
+      message += ": " + messageStr;
+    }
+
+    if (editor != null) {
+      editor.deactivateRun();
+    }
+    
+    // First, try to pretty up the error
+    if (!handleCommonErrors(exceptionName, message, listener, sketchErr)) {
+      // If not prettied, just report the exception and its placement
+      reportException(message, or, event.thread());
+    }
+    else {
+      if (exceptionName.equals("java.lang.IllegalStateException")) {
+        close();
+        if (editor instanceof REPLEditor)
+          ((REPLEditor)editor).handleRun();
+      }
+    }
+  }
+
+  /**
+   * Provide more useful explanations of common error messages, perhaps with
+   * a short message in the status area, and (if necessary) a longer message
+   * in the console.
+   *
+   * @param exceptionClass Class name causing the error (with full package name)
+   * @param message The message from the exception
+   * @param listener The Editor or command line interface that's listening for errors
+   * @return true if the error was purtified, false otherwise
+   */
+  public static boolean handleCommonErrors(final String exceptionClass,
+                                           final String message,
+                                           final RunnerListener listener,
+                                           final PrintStream err) {
+    if (exceptionClass.equals("java.lang.IllegalStateException")) {
+      listener.statusError("IllegalStateException: The structure of the sketch has been changed.");
+      err.println("This could be due to the addition or removal of a method or a ");
+      err.println("global variable. Not to worry though, the REPL Mode has ");
+      err.println("automatically restarted the sketch for you.");
+    }
+    else if (!Runner.handleCommonErrors(exceptionClass, message, listener, err)) {
+      return false;
+    }
+    return true;
   }
 }
