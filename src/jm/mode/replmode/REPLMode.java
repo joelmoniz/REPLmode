@@ -6,15 +6,31 @@ import processing.app.Base;
 import processing.app.Editor;
 import processing.app.EditorState;
 import processing.app.Mode;
+import processing.app.RunnerListener;
+import processing.app.Sketch;
+import processing.app.SketchException;
+import processing.mode.java.JavaBuild;
 import processing.mode.java.JavaMode;
+import processing.mode.java.runner.Runner;
 
 /**
  * REPL Mode for Processing.
  * 
  */
 public class REPLMode extends JavaMode {
+  
+  File srcFolder;
+  File binFolder;
+  
+  boolean isRunning;
+  
   public REPLMode(Base base, File folder) {
-    super(base, folder);
+    super(base, folder);      
+    
+    srcFolder = null;
+    binFolder = null;        
+    isRunning = false;
+    System.out.println("Bin: " + srcFolder);
   }
 
   /**
@@ -73,6 +89,37 @@ public class REPLMode extends JavaMode {
       }
     }
     return null; // badness
+  }
+  
+  /** Handles the standard Java "Run" or "Present" */
+  @Override
+  public Runner handleLaunch(Sketch sketch, RunnerListener listener,
+                             final boolean present) throws SketchException {
+    
+    if (srcFolder == null) {
+      srcFolder = this.base.getActiveEditor().getSketch().makeTempFolder();
+      System.out.println(srcFolder.getAbsolutePath());
+    }
+    
+    if (binFolder == null) {
+      binFolder = this.base.getActiveEditor().getSketch().makeTempFolder();
+      System.out.println(binFolder.getAbsolutePath());
+    }
+    JavaBuild build = new JavaBuild(sketch);
+//    String appletClassName = build.build(false);
+    String appletClassName = build.build(srcFolder, binFolder, true);
+    if (appletClassName != null) {
+      final REPLRunner runtime = new REPLRunner(build, listener);
+      new Thread(new Runnable() {
+        public void run() {
+          isRunning = true;
+          runtime.launch(present);  // this blocks until finished
+          isRunning = false;
+        }
+      }).start();
+      return runtime;
+    }
+    return null;
   }
 
   // @Override

@@ -193,6 +193,46 @@ public class REPLEditor extends JavaEditor {
       statusError(e);
     }
   }
+  
+  /**
+   * Basically prepareRun(), but without the internalCloseRunner() call
+   */
+  private void customPrepareRun() {
+    statusEmpty();
+
+    // do this to advance/clear the terminal window / dos prompt / etc
+    for (int i = 0; i < 10; i++) System.out.println();
+
+    // clear the console on each run, unless the user doesn't want to
+    if (Preferences.getBoolean("console.auto_clear")) {
+      console.clear();
+    }
+
+    // make sure the user didn't hide the sketch folder
+    sketch.ensureExistence();
+
+    // make sure any edits have been stored
+    //current.setProgram(editor.getText());
+    sketch.getCurrentCode().setProgram(getText());
+  }
+  
+  @Override
+  public boolean handleSave(boolean immediately) {
+    boolean res = super.handleSave(immediately);
+    
+//    if (replMode.isRunning) {
+      customPrepareRun();
+//      handleRun();
+      JavaBuild build = new JavaBuild(sketch);
+      try {
+        build.build(replMode.srcFolder, replMode.binFolder, true);
+      } catch (SketchException e) {
+        e.printStackTrace();
+      }
+//    }
+    
+    return res;
+  };
 
   @Override
   public void internalCloseRunner() {

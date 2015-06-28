@@ -30,27 +30,25 @@ import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.ExceptionRequest;
 
 public class REPLRunner extends Runner {
-  String portStr;
-  boolean isWindowVisible;
+  boolean isREPLWindowVisible;
   boolean hasFailedLoad;
 
   public REPLRunner(JavaBuild build, RunnerListener listener)
       throws SketchException {
     super(build, listener);
     
-    portStr = "";
-    isWindowVisible = false;
+    isREPLWindowVisible = false;
   }
 
   public void launchREPL(boolean refresh) {
     // I <3 short circuiting
-    if ((!isWindowVisible || refresh) && launchREPLVirtualMachine()) {
-      isWindowVisible = true;
+    if ((!isREPLWindowVisible || refresh) && launchREPLVirtualMachine()) {
+      isREPLWindowVisible = true;
       generateREPLTrace();
-      isWindowVisible = false;
+      isREPLWindowVisible = false;
     }
   }
-  
+
   /**
    * Generate the trace. Enable events, start thread to display events, start
    * threads to forward remote error and output streams, resume the remote VM,
@@ -157,10 +155,16 @@ public class REPLRunner extends Runner {
   }
 
   public boolean launchREPLVirtualMachine() {
+    return launchVirtualMachine(false);
+  }
+
+  @Override
+  public boolean launchVirtualMachine(boolean presenting) {
     int port = 8000 + (int) (Math.random() * 1000);
-    portStr = String.valueOf(port);
+    String portStr = String.valueOf(port);
+
     String[] vmParams = getMachineParams();
-    String[] sketchParams = getSketchParams(false);    
+    String[] sketchParams = getSketchParams(presenting);    
 
     String hotSwapArg = "";
     URL url = REPLRunner.class.getProtectionDomain().getCodeSource().getLocation();
