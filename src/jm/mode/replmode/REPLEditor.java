@@ -220,7 +220,7 @@ public class REPLEditor extends JavaEditor {
   public boolean handleSave(boolean immediately) {
     boolean res = super.handleSave(immediately);
     
-//    if (replMode.isRunning) {
+    if (replMode.srcFolder != null && replMode.binFolder != null) {
       customPrepareRun();
 //      handleRun();
       JavaBuild build = new JavaBuild(sketch);
@@ -229,7 +229,7 @@ public class REPLEditor extends JavaEditor {
       } catch (SketchException e) {
         e.printStackTrace();
       }
-//    }
+    }
     
     return res;
   };
