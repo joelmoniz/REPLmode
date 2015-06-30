@@ -8,8 +8,8 @@ import java.io.IOException;
 import javax.swing.JPanel;
 
 import processing.app.Base;
-import processing.app.EditorFooter;
-import processing.app.EditorState;
+import processing.app.ui.EditorFooter;
+import processing.app.ui.EditorState;
 import processing.app.Mode;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
@@ -241,7 +241,7 @@ public class REPLEditor extends JavaEditor {
   }
 
   @Override
-  protected void setCode(SketchCode code) {
+  public void setCode(SketchCode code) {
     super.setCode(code);
   }
 

@@ -3,8 +3,8 @@ package jm.mode.replmode;
 import java.io.File;
 
 import processing.app.Base;
-import processing.app.Editor;
-import processing.app.EditorState;
+import processing.app.ui.Editor;
+import processing.app.ui.EditorState;
 import processing.app.Mode;
 import processing.app.RunnerListener;
 import processing.app.Sketch;
