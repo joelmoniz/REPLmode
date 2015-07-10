@@ -21,6 +21,10 @@
         <fileset dir="${processing.classes.pde}" >
             <include name="*.jar" />
         </fileset>
+        
+        <fileset dir="${processing.classes.javamode}" >
+            <include name="*.jar" />
+        </fileset>
 
         <fileset dir="lib" >
             <include name="*.jar" />
@@ -96,27 +100,4 @@
     <target name="run" depends="install">
         <exec executable="${processing.executable}" spawn="false" />
     </target>
-
-    <!-- - - - - - - - - - - - - - - - - - - - - - -
-        PDE
-    - - - - - - - - - - - - - - - - - - - - - - - -->
-
-    <target name="pde">
-        <ant antfile="${processing.build}" target="build" useNativeBasedir="true" />
-        
-        <delete file="lib/JavaMode.jar"/>       
-        <copy todir="lib">
-            <fileset dir="${processing.classes.javamode}">
-                <include name="JavaMode.jar"/>
-            </fileset>
-        </copy>
-    </target>
-
-    <!-- - - - - - - - - - - - - - - - - - - - - - -
-        FULL
-    - - - - - - - - - - - - - - - - - - - - - - - -->
-
-    <target name="full" depends="pde,run">
-    </target>
-
 </project>
