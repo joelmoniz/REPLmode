@@ -316,6 +316,36 @@ public class CommandPromptPane extends NavigationFilter {
       } catch (BadLocationException e1) {
         e1.printStackTrace();
       }
+    } else if (firstCommandWord.equals(CommandList.HELP_COMMAND)) {
+      // Always have isDone as false, since we really don't want anything to get updated
+      isDone = false;
+      handleHelp(command);
+      if (isContinuing) {
+        component.replaceSelection(promptContinuation);
+      } else {
+        component.replaceSelection(prompt);
+      }
+      try {
+        rowStartPosition = Math.max(rowStartPosition, Utilities
+            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+      } catch (BadLocationException e1) {
+        e1.printStackTrace();
+      }
+    }
+    else if (command.equals(CommandList.MAN_COMMAND)) {
+      printStatusMessage("Awwww man! This humble little mode is not worthy of "
+          + "having its own man pages. Maybe try `help` instead?");
+      if (isContinuing) {
+        component.replaceSelection(promptContinuation);
+      } else {
+        component.replaceSelection(prompt);
+      }
+      try {
+        rowStartPosition = Math.max(rowStartPosition, Utilities
+            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
+      } catch (BadLocationException e1) {
+        e1.printStackTrace();
+      }
     }
 
     prefixLength = prompt.length();
@@ -430,7 +460,8 @@ public class CommandPromptPane extends NavigationFilter {
       }
     } else {
       wasSuccess = false;
-      printStatusMessage("Error: undo command should have only 0 or 1 arguments");
+      printStatusMessage("Error: undo command should have only 0 or 1 "
+          + "arguments");
     }
 
     if (wasSuccess) {
@@ -440,7 +471,8 @@ public class CommandPromptPane extends NavigationFilter {
       } else if (k == 1) {
         printStatusMessage("1 statement " + (!isRedo ? "undone" : "redone"));
       } else {
-        printStatusMessage(k + " statements " + (!isRedo ? "undone" : "redone"));
+        printStatusMessage(k + " statements "
+            + (!isRedo ? "undone" : "redone"));
       }
     }
     return wasSuccess;
@@ -466,6 +498,84 @@ public class CommandPromptPane extends NavigationFilter {
         String code = commandListManager.getCodeFunction(args[1]);
         replEditor.setText(replEditor.getText() + "\n" + code);
       }
+    }
+  }
+
+  private void handleHelp(String command) {
+    String[] args = command.split("\\s+");
+    if (args.length == 1) {
+      printStatusMessage("The following command words are available. "
+          + "Type `help <commandword>` for more information on "
+          + "each command word:\n"
+          + "* init\t* resize\t* clear\n"
+          + "* undo\t* redo\t* print\n"
+          + "* help\t* man");
+    }
+    else if (args.length == 2) {
+      if (Arrays.asList(CommandList.REPL_COMMAND_SET)
+          .contains(args[1])) {
+        if (args[1].equals(CommandList.CLEAR_COMMAND)) {
+          printStatusMessage("\nclear\n-----\nUsed to clear the REPL Console "
+              + "without affecting anything else");
+        } else if (args[1].equals(CommandList.INIT_COMMAND)) {
+          printStatusMessage("\ninit\n----\n"
+              + "Represents the first command issued to the REPL Mode "
+              + "Console, to initialize the it. Also used to pass in details "
+              + "about width and height of the sketch the console has to "
+              + "display. May take the following forms:\n"
+              + "* init: Initialize the console to display a 100x100 sketch \n"
+              + "* init w h: Initialize the console to display a sketch of "
+              + "width w and height h\n"
+              + "* init w h r: Initialize the console to display a sketch of "
+              + "width w and height h, and to use a renderer of type r "
+              + "(r = P2D or P3D)");
+        } else if (args[1].equals(CommandList.RESIZE_COMMAND)) {
+          printStatusMessage("\nresize\n------\n"
+              + "Allows the user to resize sketch that the REPL console "
+              + "displays without losing the contents of the sketch. Can be "
+              + "run in one of the following 3 ways, each similiar to their "
+              + "`init` counterparts:\n  "
+              + "* resize\n  "
+              + "* resize w h\n  "
+              + "* resize w h r");
+        } else if (args[1].equals(CommandList.UNDO_COMMAND)) {
+          printStatusMessage("\nundo\n----\n"
+              + "Used to undo a (set of) statement(s). Command statements "
+              + "cannot be undone. Can be called in one of 2 ways:\n"
+              + "* undo: Undoes the last valid statment.\n"
+              + "* undo x: Undoes the last x statements.");
+        } else if (args[1].equals(CommandList.REDO_COMMAND)) {
+          printStatusMessage("\nredo\n----\n"
+              + "Used to redo a (set of) statement(s). A redo can only be "
+              + "performed immendiately after an undo. Can be called in one "
+              + "of 2 ways:\n"
+              + "* redo: \"Redoes\" the last undo\n"
+              + "* redo x: \"Redoes\" the last x statements undone by an "
+              + "undo");
+        } else if (args[1].equals(CommandList.PRINT_COMMAND)) {
+          printStatusMessage("\nprint\n-----\n"
+              + "Adds a method of the void return type to the current tab, "
+              + "the method body consisting of all statements used to display "
+              + "the output visible at present (i.e., all statements from the "
+              + "last init, excluding those undone). Takes the format "
+              + "`print x`, where x is a string representing the method "
+              + "name.");
+        } else if (args[1].equals(CommandList.HELP_COMMAND)) {
+          printStatusMessage("\nhelp(noun): something or someone that helps.\n"
+              + "  (Cambridge Dictionary)"
+              + "\nOK, so that wasn't very helpful...");
+        } else if (args[1].equals(CommandList.MAN_COMMAND)) {
+          printStatusMessage("\nman\n---\n???");
+        }
+      }
+      else {
+        printStatusMessage("Invalid command word `"+ args[1] + "`");
+      }
+    }
+    else {
+      printStatusMessage("Invalid `help` query: please enter `help` to "
+          + "get a list of command words, or `help <commandword>` to "
+          + "get more information about each command word.");
     }
   }
 

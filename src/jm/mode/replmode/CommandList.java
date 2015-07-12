@@ -45,9 +45,13 @@ public class CommandList {
 
   public static final String PRINT_COMMAND = "print";
 
+  public static final String HELP_COMMAND = "help";
+
+  public static final String MAN_COMMAND = "man";
+
   public static final String[] REPL_COMMAND_SET = {
     CLEAR_COMMAND, INIT_COMMAND, RESIZE_COMMAND, UNDO_COMMAND, REDO_COMMAND,
-    PRINT_COMMAND };
+    PRINT_COMMAND, HELP_COMMAND, MAN_COMMAND};
 
   public static final String SIZE_PD2 = "P2D";
 
