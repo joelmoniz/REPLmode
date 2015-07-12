@@ -2,9 +2,7 @@ package jm.mode.replmode;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.Arrays;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
@@ -17,10 +15,8 @@ import javax.swing.text.NavigationFilter;
 import javax.swing.text.Position;
 import javax.swing.text.Utilities;
 
-import processing.app.Base;
 import processing.app.Library;
 import processing.app.SketchException;
-import processing.core.PApplet;
 
 /**
  * Class responsible for setting up a NavigationFilter that makes a JTextArea
@@ -241,17 +237,18 @@ public class CommandPromptPane extends NavigationFilter {
 
       // Don't clear the screen and undo stack any more
 //      commandListManager.clear();
-      rowStartPosition = 0;
-
     } else if (firstCommandWord.equals(CommandList.INIT_COMMAND)) {
       isDone = handleInit(command, false);
-      component.setText(prompt + command + '\n' + prompt);
-      try {
-        int cp = consoleArea.getCaretPosition();
-        rowStartPosition = Utilities.getRowStart(consoleArea, cp);
-        refresh = true;
-      } catch (BadLocationException e1) {
-        e1.printStackTrace();
+      if (isDone) {
+        component.setText(prompt + command + '\n' + prompt);
+        openLeftCurlies = 0;
+        isContinuing = false;
+      }
+      else if (isContinuing) {
+        component.replaceSelection(promptContinuation);
+      }
+      else {
+        component.replaceSelection(prompt);
       }
     } else if (firstCommandWord.equals(CommandList.RESIZE_COMMAND)) {
       if (isContinuing) {
@@ -263,12 +260,6 @@ public class CommandPromptPane extends NavigationFilter {
         component.replaceSelection(prompt);
         refresh = true;
       }
-      try {
-        rowStartPosition = Math.max(rowStartPosition, Utilities
-            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
-      } catch (BadLocationException e1) {
-        e1.printStackTrace();
-      }
     } else if (firstCommandWord.equals(CommandList.UNDO_COMMAND)) {
       if (isContinuing) {
         printStatusMessage("Oops! REPL Mode is in the midst of another command (block)");
@@ -279,12 +270,6 @@ public class CommandPromptPane extends NavigationFilter {
         component.replaceSelection(prompt);
         refresh = true;
       }
-      try {
-        rowStartPosition = Math.max(rowStartPosition, Utilities
-            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
-      } catch (BadLocationException e1) {
-        e1.printStackTrace();
-      }
     } else if (firstCommandWord.equals(CommandList.REDO_COMMAND)) {
       if (isContinuing) {
         printStatusMessage("Oops! REPL Mode is in the midst of another command (block)");
@@ -293,12 +278,6 @@ public class CommandPromptPane extends NavigationFilter {
       } else {
         isDone = handleUndo(command, true);
         component.replaceSelection(prompt);
-      }
-      try {
-        rowStartPosition = Math.max(rowStartPosition, Utilities
-            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
-      } catch (BadLocationException e1) {
-        e1.printStackTrace();
       }
     } else if (firstCommandWord.equals(CommandList.PRINT_COMMAND)) {
       // Always have isDone as false, since we really don't want anything to get updated
@@ -310,12 +289,6 @@ public class CommandPromptPane extends NavigationFilter {
         handlePrintCode(command);
         component.replaceSelection(prompt);
       }
-      try {
-        rowStartPosition = Math.max(rowStartPosition, Utilities
-            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
-      } catch (BadLocationException e1) {
-        e1.printStackTrace();
-      }
     } else if (firstCommandWord.equals(CommandList.HELP_COMMAND)) {
       // Always have isDone as false, since we really don't want anything to get updated
       isDone = false;
@@ -324,12 +297,6 @@ public class CommandPromptPane extends NavigationFilter {
         component.replaceSelection(promptContinuation);
       } else {
         component.replaceSelection(prompt);
-      }
-      try {
-        rowStartPosition = Math.max(rowStartPosition, Utilities
-            .getRowStart(consoleArea, consoleArea.getCaretPosition()));
-      } catch (BadLocationException e1) {
-        e1.printStackTrace();
       }
     }
     else if (command.equals(CommandList.MAN_COMMAND)) {
@@ -340,6 +307,26 @@ public class CommandPromptPane extends NavigationFilter {
       } else {
         component.replaceSelection(prompt);
       }
+    }
+
+    if (isContinuing) {
+      prefixLength = promptContinuation.length();
+    }
+    else {
+      prefixLength = prompt.length();
+    }
+
+    if (command.equals(CommandList.CLEAR_COMMAND)) {
+      rowStartPosition = 0;
+    } else if (firstCommandWord.equals(CommandList.INIT_COMMAND) && isDone) {
+      try {
+        int cp = consoleArea.getCaretPosition();
+        rowStartPosition = Utilities.getRowStart(consoleArea, cp);
+        refresh = true;
+      } catch (BadLocationException e1) {
+        e1.printStackTrace();
+      }
+    } else {
       try {
         rowStartPosition = Math.max(rowStartPosition, Utilities
             .getRowStart(consoleArea, consoleArea.getCaretPosition()));
@@ -347,8 +334,6 @@ public class CommandPromptPane extends NavigationFilter {
         e1.printStackTrace();
       }
     }
-
-    prefixLength = prompt.length();
 
     runTempSketch(!isDone, refresh); // since !isDone ==> isError
 
