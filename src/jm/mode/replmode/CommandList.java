@@ -90,9 +90,8 @@ public class CommandList {
       s.append(h);
 
       if (renderer != null && !renderer.isEmpty()) {
-        s.append(", \"");
+        s.append(", ");
         s.append(renderer);
-        s.append("\"");
       }
 
       s.append(");");
