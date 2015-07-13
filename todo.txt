@@ -55,7 +55,7 @@ Bugs
 [X] Arrow keys don't move right after clear is run
 [ ] Uncaught exceptions (probably, even hopefully) run amok
 [X] REPL sketch sometimes just doesn't open, especially just after PDE is started
-[ ] shift+home>backspace doesn't work, while shift+(home>right arrow)>backspace does- 
+[X] shift+home>backspace doesn't work, while shift+(home>right arrow)>backspace does- 
 	offset error probably?
 
 Internals

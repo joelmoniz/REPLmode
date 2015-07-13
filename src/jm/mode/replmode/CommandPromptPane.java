@@ -102,7 +102,23 @@ public class CommandPromptPane extends NavigationFilter {
     public void actionPerformed(ActionEvent e) {
       JTextArea component = (JTextArea) e.getSource();
 
-      if (getColumn(component) > prefixLength + 1) {
+      /*
+       * Delete the previous character (or the selection) only when the cursor
+       * location from the start of the line is after the prefix. Prevents the
+       * user from deleting the prompt prefix.
+       * 
+       * The second part of the condition (the part after the ||) is to ensure
+       * that selecting the entire line (or a part of the line from anywhere to
+       * the starting point) and then pressing backspace deletes the selection.
+       * The cursor is just after the prompt, and while a normal backspace will
+       * delete only the selection (and not touch the location before it), if
+       * this part after the || is not provided, all that the action handler
+       * knows is that the cursor is right in front of the prompt, and does not
+       * backspace.
+       */
+      if ((getColumn(component) > prefixLength + 1)
+          || ((component.getSelectionEnd() != component.getSelectionStart()) 
+          && (getColumn(component) > prefixLength))) {
         deletePrevious.actionPerformed(null);
       }
     }
