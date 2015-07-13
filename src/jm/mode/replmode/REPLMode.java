@@ -24,13 +24,15 @@ public class REPLMode extends JavaMode {
   
   boolean isRunning;
   
+  public static boolean firstEditorShown;
+  
   public REPLMode(Base base, File folder) {
     super(base, folder);      
     
     srcFolder = null;
     binFolder = null;        
     isRunning = false;
-    System.out.println("Bin: " + srcFolder);
+    firstEditorShown = false;
   }
 
   /**
@@ -49,6 +51,16 @@ public class REPLMode extends JavaMode {
 
   @Override
   public Editor createEditor(Base base, String path, EditorState state) {
+    /*
+     * Teensy little hack to show the welcome screen when the first time an
+     * Editor is created, but not after that. Required since an REPLMode object
+     * is created right at startup time (even if another mode is the active
+     * one), and this method is called each time a new window is opened.
+     */
+    if (!firstEditorShown) {
+      REPLWelcomeDialog.showWelcome();
+      firstEditorShown = true;
+    }
     return new REPLEditor(base, path, state, this);
   }
 

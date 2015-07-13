@@ -1,7 +1,10 @@
 package jm.mode.replmode;
 
-import java.awt.Dimension;
 import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -9,22 +12,31 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 public class REPLWelcomeDialog {
 
-  private JCheckBox showEachStartup;
+  private JCheckBox dontShowEachStartupCheckbox;
   private JPanel cbPanel;
   private String msg;
   private JLabel msgLabel;
+  private boolean showEachStartup;
   
   private static REPLWelcomeDialog dialog;
   
-  public static void show() {
+  public static final String DONT_SHOW_AT_STARTUP_FILE = "noshow.repl";
+  
+  public static void showWelcome() {
     if (dialog == null) {
       dialog = new REPLWelcomeDialog();
     }    
     dialog.displayWelcomeDialog();
+  }
+  
+  public static void showHelp() {
+    if (dialog == null) {
+      dialog = new REPLWelcomeDialog();
+    }    
+    dialog.displayHelpDialog();
   }
 
   private REPLWelcomeDialog() {
@@ -56,24 +68,113 @@ public class REPLWelcomeDialog {
     msgLabel.setFont(new Font(msgFont.getFontName(), Font.PLAIN, 
                               msgFont.getSize()));
     cbPanel.add(msgLabel);
-    showEachStartup = new JCheckBox("Do not show this message at startup");
-    cbPanel.add(showEachStartup);
+    dontShowEachStartupCheckbox = 
+        new JCheckBox("Do not show this message at startup");
+    cbPanel.add(dontShowEachStartupCheckbox);
+    
+    showEachStartup = isShowingEachStartup();
+    dontShowEachStartupCheckbox.setSelected(!showEachStartup);
+  }
+  
+  private boolean isShowingEachStartup() {
+    URL url = 
+        REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();
+    File dir = null;
+    try {
+      dir = new File(url.toURI());
+      dir = dir.getParentFile().getParentFile();
+//      List<String> dirList = Arrays.asList(dir.list());
+      return 
+          !(new File(dir, DONT_SHOW_AT_STARTUP_FILE).exists());
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+    return true;
   }
   
   private void displayWelcomeDialog() {
+    if (!isShowingEachStartup()) {
+      return;
+    }
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
       @Override
       public void run() {
         JOptionPane.showMessageDialog(new JFrame(), dialog.cbPanel, 
                                       "Welcome to the REPL Mode",
-                                      JOptionPane.PLAIN_MESSAGE, null);        
+                                      JOptionPane.PLAIN_MESSAGE, null);
+        if (dontShowEachStartupCheckbox.isSelected()) {
+          handleDontShowCheckbox(false);
+          showEachStartup = false;
+        }
       }
     });
   }
+
+  private void displayHelpDialog() {
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+
+      @Override
+      public void run() {
+        JOptionPane.showMessageDialog(new JFrame(), dialog.cbPanel,
+                                      "REPL Mode- A quick guide",
+                                      JOptionPane.PLAIN_MESSAGE, null);
+        if (dontShowEachStartupCheckbox.isSelected() == showEachStartup) {
+          showEachStartup = !dontShowEachStartupCheckbox.isSelected();
+          handleDontShowCheckbox(showEachStartup);
+        }
+      }
+    });
+  }
+
+  private void handleDontShowCheckbox(boolean showEachStartup) {
+    Thread t = new Thread(new Runnable() {
+      
+      @Override
+      public void run() {
+        if (showEachStartup) {
+          unsetDontShowEachStartupFile();
+        }
+        else {
+          setDontShowEachStartupFile();
+        }
+      }
+    });
+    t.start();
+  }
+
+  private void setDontShowEachStartupFile() {
+    URL url = 
+        REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();
+    File dir = null;
+    try {
+      dir = new File(url.toURI());
+      dir = dir.getParentFile().getParentFile();
+      File noshow = new File(dir, DONT_SHOW_AT_STARTUP_FILE);
+      noshow.createNewFile();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void unsetDontShowEachStartupFile() {
+    URL url = 
+        REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();
+    File dir = null;
+    try {
+      dir = new File(url.toURI());
+      dir = dir.getParentFile().getParentFile();
+      File noshow = new File(dir, DONT_SHOW_AT_STARTUP_FILE);
+      noshow.delete();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+  }
   
   public static void main(String[] args) {
-    show();
+    showWelcome();
   }
 
 }
