@@ -62,7 +62,9 @@
 		</zip-->
 
         <copy todir="${bundle}">
-            <fileset dir="resources/" />
+            <fileset dir="resources/">
+                <exclude name="build*" />
+            </fileset>
         </copy>
 
         <copy todir="${bundle}/mode">
