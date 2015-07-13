@@ -29,6 +29,15 @@ public class REPLMode extends JavaMode {
   public REPLMode(Base base, File folder) {
     super(base, folder);      
     
+    /*
+     * Do this to use the JavaMode's examples, libraries and reference, since
+     * all of them are perfectly applicable to the REPL Mode
+     */
+    File javamodeFolder = Base.getContentFile("modes/java");
+    examplesFolder = new File(javamodeFolder, "examples");
+    librariesFolder = new File(javamodeFolder, "libraries");
+    referenceFolder = new File(javamodeFolder, "reference");
+    
     srcFolder = null;
     binFolder = null;        
     isRunning = false;
