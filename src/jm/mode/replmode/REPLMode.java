@@ -147,5 +147,4 @@ public class REPLMode extends JavaMode {
   // public Editor createEditor(Base base, String path, EditorState state) {
   // return new REPLEditor(base, path, state, this);
   // }
-
 }

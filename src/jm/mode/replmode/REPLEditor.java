@@ -1,21 +1,26 @@
 package jm.mode.replmode;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import processing.app.Base;
-import processing.app.ui.EditorFooter;
-import processing.app.ui.EditorState;
+import processing.app.Language;
 import processing.app.Mode;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
 import processing.app.Sketch;
 import processing.app.SketchCode;
 import processing.app.SketchException;
+import processing.app.ui.EditorFooter;
+import processing.app.ui.EditorState;
 import processing.mode.java.JavaBuild;
 import processing.mode.java.JavaEditor;
 import processing.mode.java.runner.Runner;
@@ -71,7 +76,8 @@ public class REPLEditor extends JavaEditor {
       File subdir = new File(untitledFolderLocation, sketch.getFolder()
           .getName());
 
-      final File tempFile = new File(subdir, subdir.getName() + ".pde");//File.createTempFile("tmp", ".pde", subdir);
+      final File tempFile = new File(subdir, subdir.getName() + ".pde");
+      //File.createTempFile("tmp", ".pde", subdir);
       tempFile.createNewFile();
       replTempSketch = new Sketch(tempFile.getAbsolutePath(), this);
       
@@ -110,6 +116,8 @@ public class REPLEditor extends JavaEditor {
 
     return footer;
   }
+  
+  //---------------------------------------------------------------------------
 
   protected void prepareInitialREPLRun(String replCode) {
     // We no longer want the window to close
@@ -243,6 +251,38 @@ public class REPLEditor extends JavaEditor {
   @Override
   public void setCode(SketchCode code) {
     super.setCode(code);
+  }
+  
+  //---------------------------------------------------------------------------
+  
+  @Override
+  public JMenu buildHelpMenu() {
+    JMenu replHelpMenu = super.buildHelpMenu();
+    JMenuItem item = null;
+    
+    replHelpMenu.addSeparator();
+    
+    item = new JMenuItem("REPL Mode");
+    item.setEnabled(false);
+    replHelpMenu.add(item);
+
+    item = new JMenuItem("Getting started");
+    item.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        REPLWelcomeDialog.showHelp();
+      }
+    });
+    replHelpMenu.add(item);
+
+    item = new JMenuItem("Report a bug");
+    item.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Base.openURL("https://github.com/joelmoniz/REPLmode/issues/new");
+      }
+    });
+    replHelpMenu.add(item);
+    
+    return replHelpMenu;
   }
 
 }
