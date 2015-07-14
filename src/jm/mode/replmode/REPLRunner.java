@@ -34,6 +34,13 @@ import com.sun.jdi.request.EventRequest;
 import com.sun.jdi.request.EventRequestManager;
 import com.sun.jdi.request.ExceptionRequest;
 
+/**
+ * Class overriding processing's Runner class, primarily to permit 
+ * hot swapping.
+ * 
+ * The base Runner class is used to compile a sketch, and to provide the
+ * ability to use a debugger.
+ */
 public class REPLRunner extends Runner {
   boolean isREPLWindowVisible;
   boolean hasFailedLoad;
@@ -45,6 +52,11 @@ public class REPLRunner extends Runner {
     isREPLWindowVisible = false;
   }
 
+  /**
+   * Responsible for "launching" the sketch associated with the REPL Console
+   * @param refresh Whether the sketch window has to be closed and reopened
+   * (if true), or if it can simply hot swapped (if false)
+   */
   public void launchREPL(boolean refresh) {
     // I <3 short circuiting
     if ((!isREPLWindowVisible || refresh) && launchREPLVirtualMachine()) {
@@ -159,10 +171,19 @@ public class REPLRunner extends Runner {
     }
   }
 
+  /**
+   * Convenience method to launch the VM corresponding to the REPL Console's
+   * sketch 
+   * @return True if the VM was launched
+   */
   public boolean launchREPLVirtualMachine() {
     return launchVirtualMachine(false);
   }
 
+  /**
+   * Pretty much the same as the launchVirtualMachine() of the base Runner 
+   * class, except that this adds in an extra VM argument for the hot swapper 
+   */
   @Override
   public boolean launchVirtualMachine(boolean presenting) {
     int port = 8000 + (int) (Math.random() * 1000);
@@ -171,22 +192,32 @@ public class REPLRunner extends Runner {
     String[] vmParams = getMachineParams();
     String[] sketchParams = getSketchParams(presenting);    
 
+    /**
+     * This contains the string representing the VM argument for the hot 
+     * swapper
+     */
     String hotSwapArg = "";
-    URL url = REPLRunner.class.getProtectionDomain().getCodeSource().getLocation();
+    URL url = 
+        REPLRunner.class.getProtectionDomain().getCodeSource().getLocation();
     File currentDirectory = null;
     try {
       currentDirectory = new File(url.toURI());
-      hotSwapArg = "-javaagent:" + currentDirectory.getParentFile().getAbsolutePath() + "/hotswap-agent.jar=autoHotswap=true";
+      hotSwapArg = "-javaagent:" 
+          + currentDirectory.getParentFile().getAbsolutePath()
+          + "/hotswap-agent.jar=autoHotswap=true";
       hasFailedLoad = false;
     } catch (URISyntaxException e2) {
 //      e2.printStackTrace();
-      System.err.println("The hot swapper is feeling a little sleepy right now. Don't worry- REPL Mode will try to wake it up");
+      System.err.println("The hot swapper is feeling a little sleepy right "
+          + "now. Don't worry- REPL Mode will try to wake it up");
       hasFailedLoad = true;
     }
     // Newer (Java 1.5+) version that uses JVMTI
-    String jdwpArg = "-agentlib:jdwp=transport=dt_socket,address=" + portStr + ",server=y,suspend=y";
+    String jdwpArg = "-agentlib:jdwp=transport=dt_socket,address=" 
+        + portStr + ",server=y,suspend=y";
     // Everyone works the same under Java 7 (also on OS X)
-    String[] commandArgs = new String[] { Base.getJavaPath(), jdwpArg,hotSwapArg };
+    String[] commandArgs = 
+        new String[] { Base.getJavaPath(), jdwpArg,hotSwapArg };
     commandArgs = PApplet.concat(commandArgs, vmParams);
     commandArgs = PApplet.concat(commandArgs, sketchParams);
     launchJava(commandArgs);
@@ -222,7 +253,7 @@ public class REPLRunner extends Runner {
       throw new Error("Internal error: " + exc);
     }
   }
-  
+
   boolean isFailedLoad() {
     return hasFailedLoad;
   }

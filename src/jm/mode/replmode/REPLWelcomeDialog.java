@@ -13,6 +13,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+/**
+ * Singleton class responsible for displaying a modal dialog that gives the user
+ * a quick overview of the REPL Mode, and allows the user to choose whether or
+ * not to show the dialog each time the Mode starts.
+ * 
+ * @author Joel Moniz
+ */
 public class REPLWelcomeDialog {
 
   private JCheckBox dontShowEachStartupCheckbox;
@@ -23,8 +30,15 @@ public class REPLWelcomeDialog {
   
   private static REPLWelcomeDialog dialog;
   
+  /**
+   * Name of the file used to keep track of whether or not the user wants the
+   * Welcome dialog to be shown at startup time.
+   */
   public static final String DONT_SHOW_AT_STARTUP_FILE = "noshow.repl";
   
+  /**
+   * Display the welcome dialog at startup time
+   */
   public static void showWelcome() {
     if (dialog == null) {
       dialog = new REPLWelcomeDialog();
@@ -32,6 +46,9 @@ public class REPLWelcomeDialog {
     dialog.displayWelcomeDialog();
   }
   
+  /**
+   * Display the welcome dialog from the Help menu, post startup
+   */
   public static void showHelp() {
     if (dialog == null) {
       dialog = new REPLWelcomeDialog();
@@ -76,6 +93,10 @@ public class REPLWelcomeDialog {
     dontShowEachStartupCheckbox.setSelected(!showEachStartup);
   }
   
+  /**
+   * @return <code>true</code> if the welcome dialog is to be displayed to the
+   * user each time the REPL Mode is started, false otherwise 
+   */
   private boolean isShowingEachStartup() {
     URL url = 
         REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();
@@ -92,6 +113,10 @@ public class REPLWelcomeDialog {
     return true;
   }
   
+  /**
+   * Function to display the welcome dialog at startup time.
+   * Ensures that the dialog is displayed on the EDT.
+   */
   private void displayWelcomeDialog() {
     if (!isShowingEachStartup()) {
       return;
@@ -111,6 +136,10 @@ public class REPLWelcomeDialog {
     });
   }
 
+  /**
+   * Function to display the welcome dialog from the Help menu, post startup.
+   * Ensures that the dialog is displayed on the EDT.
+   */
   private void displayHelpDialog() {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
@@ -127,6 +156,16 @@ public class REPLWelcomeDialog {
     });
   }
 
+  /**
+   * Handles the creation or removal of the marker file responsible for telling
+   * the Mode whether or not to display the welcome screen at each startup.
+   * Since this is generally called once the modal welcome dialog is closed on
+   * the EDT, the creation/deletion of the file is done on a new thread.
+   * 
+   * @param showEachStartup
+   *          Whether the marker file is to be created (to indicate that the
+   *          welcome screen is not be be shown at startup time), or deleted.
+   */
   private void handleDontShowCheckbox(boolean showEachStartup) {
     Thread t = new Thread(new Runnable() {
       
@@ -143,6 +182,10 @@ public class REPLWelcomeDialog {
     t.start();
   }
 
+  /**
+   * Creates the marker file which indicates that the welcome screen is 
+   * not be be shown at startup time
+   */
   private void setDontShowEachStartupFile() {
     URL url = 
         REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();
@@ -159,6 +202,10 @@ public class REPLWelcomeDialog {
     }
   }
 
+  /**
+   * Deletes the marker file which indicates that the welcome screen is 
+   * not be be shown at startup time
+   */
   private void unsetDontShowEachStartupFile() {
     URL url = 
         REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();

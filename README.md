@@ -23,7 +23,7 @@ To build REPL Mode from source (recommended), do the following:
   * `processing.modes` : Represents the path to the folder where the mode is to be installed (usually the `modes` folder inside the sketchbook)
   * `processing.executable` : Represents the path to the processing executable
 
-2. In the command prompt or terminal, simply run `ant full` from the resources directory (where the build.xml and build.properties files are present).
+2. In the command prompt or terminal, simply run `ant run` from the resources directory (where the build.xml and build.properties files are present).
 
 Using the hot-swapper
 ---------------------

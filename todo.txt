@@ -8,80 +8,60 @@ UI
 [ ] Permit sketch and REPL windows to be present separately, together?
 [ ] Give REPL Mode focus, not sketch, when sketch is run
 [ ] Handle error and status messages
-    [X] Enable printing
     [ ] Enable colorization
+    [X] Enable printing
 [ ] Add syntax colorization
 [ ] Update font as soon as user changes it in Preferences window
 
 Usage
 =====
-[X] Add in simple drawing functions
 [ ] Add in miscellaneous command words specific to REPL Mode:
-    [X] clear
-    	[X] Ensure that init properties are copied over when clear is done
-    [X] init w h renderer (which serves as a replacement to size(w,h,renderer))
-    	[X] prevent size() from being called directly
-    	[X] allow init to be called again, it signifying starting completely from scratch
-    	[X] allow 3 types of calls:
-    		[X] init
-    		[X] init w h
-    		[X] init w h renderer
-    [X] reinit w h renderer (which is effectively like making the sketch larger in size 
-    	without changing any of the already existing commands)
-    	[X] allow 3 types of calls:
-    		[X] reinit
-    		[X] reinit w h
-    		[X] reinit w h renderer
-    	[X] Rename reinit with the brand new, ultra-creative name "resize" :/
-    		Now how on earth didn't I think of that before...
-	[X] undo x (undo the last x non-undo/redo statements)
-	[X] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo)
     [ ] print fn (adds all correct commands executed from the last clear into a fn() function at 
         the bottom of the current sketch)
-    	[X] implement print, ensuring only 1 argument is provided
-    	[ ] ensure argument is a valid function name
-    	[ ] print either as last function in file, or as last function in class
-    [ ] help
-    [ ] man
+        [X] implement print, ensuring only 1 argument is provided
+        [ ] ensure argument is a valid function name
+        [ ] print either as last function in file, or as last function in class
     [ ] license
-[X] Add in more complex constructs, like variable declarations, ifs and loops
+    [X] clear
+        [X] Ensure that init properties are copied over when clear is done
+    [X] init w h renderer (which serves as a replacement to size(w,h,renderer))
+        [X] prevent size() from being called directly
+        [X] allow init to be called again, it signifying starting completely from scratch
+        [X] allow 3 types of calls:
+            [X] init
+            [X] init w h
+            [X] init w h renderer
+    [X] reinit w h renderer (which is effectively like making the sketch larger in size 
+        without changing any of the already existing commands)
+        [X] allow 3 types of calls:
+            [X] reinit
+            [X] reinit w h
+            [X] reinit w h renderer
+        [X] Rename reinit with the brand new, ultra-creative name "resize" :/
+            Now how on earth didn't I think of that before...
+    [X] undo x (undo the last x non-undo/redo statements)
+    [X] redo x (redo the last y undos, y = min(x,k), k=no. of continuous undos before this redo)
+    [X] help
+    [X] man
 [ ] Allow import statements
     [ ] This would include handling PDF in init
-[X] Should clear just clear the console? And the user use init when the sketch needs to be cleared?
-
-Bugs
-====
-[X] JavaMode errors don't work. Oh oh :O
-[X] Arrow keys don't move right after clear is run
-[ ] Uncaught exceptions (probably, even hopefully) run amok
-[X] REPL sketch sometimes just doesn't open, especially just after PDE is started
-[X] shift+home>backspace doesn't work, while shift+(home>right arrow)>backspace does- 
-	offset error probably?
 
 Internals
 =========
 [ ] Error checking
-	[X] implement basic error checking
-	[ ] Have errors checked line-by-line when blocks of code are entered
-	[ ] Throw a list of all errors in each line
-[X] Hot-swap without re-opening new sketches
+    [ ] Have errors checked line-by-line when blocks of code are entered
+    [ ] Throw a list of all errors in each line
+    [X] implement basic error checking
 [ ] Delete temporary folder used by REPL Mode on exit
-[X] Use a noLoop() ?
 
 Readme
 ======
-[X] Add build instructions
-[X] Add usage instructions
 [ ] Add a license file
 
 Code Style
 ==========
-[X] Refactor the code. All of it.
-    [X] Remove the dozen-odd test functions and functions no longer in use
-    [X] There was a now unused class in there. Remove it after ensuring it is, indeed, unused.
-    [X] Remove all the junk commented out code.
 [ ] Look at methods such as REPLEditor/handleREPLLaunch and REPLRunner/build and find the best
-	place for them
+    place for them
 [ ] Check out how enter and delete keys are handled in CommandPromptPane class
 [ ] Check out where best to handle the `clear` command actually clearing the console
 
@@ -102,3 +82,35 @@ UI
 Build
 =====
 [X] Make things compatible with 3.0
+
+Usage
+=====
+[X] Add in simple drawing functions
+[X] Add in more complex constructs, like variable declarations, ifs and loops
+[X] Should clear just clear the console? And the user use init when the sketch needs to be cleared?
+
+Bugs
+====
+[X] JavaMode errors don't work. Oh oh :O
+[X] Arrow keys don't move right after clear is run
+[X] Uncaught exceptions (probably, even hopefully) run amok
+[X] REPL sketch sometimes just doesn't open, especially just after PDE is started
+[X] shift+home>backspace doesn't work, while shift+(home>right arrow)>backspace does- 
+    offset error probably?
+
+Readme
+======
+[X] Add build instructions
+[X] Add usage instructions
+
+Code Style
+==========
+[X] Refactor the code. All of it.
+    [X] Remove the dozen-odd test functions and functions no longer in use
+    [X] There was a now unused class in there. Remove it after ensuring it is, indeed, unused.
+    [X] Remove all the junk commented out code.
+
+Internals
+=========
+[X] Hot-swap without re-opening new sketches
+[X] Use a noLoop() ?

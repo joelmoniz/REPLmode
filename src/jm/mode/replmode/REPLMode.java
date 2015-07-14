@@ -19,11 +19,28 @@ import processing.mode.java.runner.Runner;
  */
 public class REPLMode extends JavaMode {
   
+  /**
+   * The folder containing the intermediate .java files obtained by 
+   * pre-processing .pde files
+   */
   File srcFolder;
+  
+  /**
+   * The folder containing the pre-processed .java files in their compiled 
+   * .class form
+   */
   File binFolder;
   
+  /**
+   * Describes whether or not the sketch is running.
+   * @deprecated Not really used anywhere
+   */
   boolean isRunning;
   
+  /**
+   * Describes whether an REPLEditor has already been shown. Used, for example,
+   * to display the welcome screen once (and only once).
+   */
   public static boolean firstEditorShown;
   
   public REPLMode(Base base, File folder) {
@@ -57,7 +74,6 @@ public class REPLMode extends JavaMode {
   /**
    * Create a new editor associated with this mode.
    */
-
   @Override
   public Editor createEditor(Base base, String path, EditorState state) {
     /*
@@ -85,6 +101,7 @@ public class REPLMode extends JavaMode {
    */
   @Override
   public String[] getExtensions() {
+    // TODO: Is .repl even used anywhere?
     return new String[] { "pde", "java", "repl" };
   }
 
@@ -112,22 +129,31 @@ public class REPLMode extends JavaMode {
     return null; // badness
   }
   
-  /** Handles the standard Java "Run" or "Present" */
+  /**
+   * Handles the standard Java "Run" or "Present". Overridden to implement hot
+   * swapping- as opposed to creating new temporary folders to store the .java
+   * and .class files each time the sketch is run, here the same .class files
+   * have to be overwritten for the hot swapper to kick in.
+   * */
   @Override
   public Runner handleLaunch(Sketch sketch, RunnerListener listener,
                              final boolean present) throws SketchException {
-    
+
+    /**
+     * Initialize srcFolder/binFolder is they are <code>null</code> to the
+     * location of a temporary folder. Unlike in the JavaMode, where a temporary
+     * folder is created each time the code is run, the same temporary folders
+     * are used here. This is because over-writing the .class files is what
+     * causes the code to hot swap.
+     */
     if (srcFolder == null) {
       srcFolder = this.base.getActiveEditor().getSketch().makeTempFolder();
-      System.out.println(srcFolder.getAbsolutePath());
     }
-    
     if (binFolder == null) {
       binFolder = this.base.getActiveEditor().getSketch().makeTempFolder();
-      System.out.println(binFolder.getAbsolutePath());
     }
+    
     JavaBuild build = new JavaBuild(sketch);
-//    String appletClassName = build.build(false);
     String appletClassName = build.build(srcFolder, binFolder, true);
     if (appletClassName != null) {
       final REPLRunner runtime = new REPLRunner(build, listener);

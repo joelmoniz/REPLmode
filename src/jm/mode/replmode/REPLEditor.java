@@ -12,7 +12,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import processing.app.Base;
-import processing.app.Language;
 import processing.app.Mode;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
@@ -26,19 +25,15 @@ import processing.mode.java.JavaEditor;
 import processing.mode.java.runner.Runner;
 
 /**
- * Main View Class. Handles the editor window including tool bar and menu. Has
- * access to the Sketch. Primarily used to display the REPL/Console toggle
- * buttons and to display the console/REPL pane appropriately. Adapted from
- * DebugEditor class of processing-experimental.
- * 
- * @author Martin Leopold <m@martinleopold.com>
- * @author Manindra Moharana &lt;me@mkmoharana.com&gt;
- * @author Joel Ruben Antony Moniz
- * 
+ * Handles the editor window including tool bar and menu. Has
+ * access to the Sketch. Primarily used to add in the REPL toggle
+ * button and to display the REPL pane when the toggle button is 
+ * pressed.
  */
 
-@SuppressWarnings("serial")
 public class REPLEditor extends JavaEditor {
+
+  private static final long serialVersionUID = 5121439110477282724L;
 
   /**
    * Panel with card layout which contains the p5 console and REPL panes
@@ -50,15 +45,28 @@ public class REPLEditor extends JavaEditor {
    */
   protected REPLConsolePane replConsole;
 
+  /**
+   * Temporary dummy sketch used by the REPL Mode's Console to store, compile
+   * and run the code typed in by the user 
+   */
   protected Sketch replTempSketch;
 
   protected File untitledFolderLocation;
 
   Runner replRuntime;
   REPLRunner runtime;
-  
-  File srcFolder;
-  File binFolder;
+
+  /**
+   * The folder containing the intermediate .java files obtained by 
+   * pre-processing the dummy .pde file created by the REPL Console
+   */
+  File replSrcFolder;
+
+  /**
+   * The folder containing the pre-processed .java (created by the REPL 
+   * Console) files in their compiled .class form
+   */
+  File replBinFolder;
 
   REPLMode replMode;
 
@@ -81,13 +89,14 @@ public class REPLEditor extends JavaEditor {
       tempFile.createNewFile();
       replTempSketch = new Sketch(tempFile.getAbsolutePath(), this);
       
-      srcFolder = replTempSketch.makeTempFolder();
-      binFolder = replTempSketch.makeTempFolder();
+      replSrcFolder = replTempSketch.makeTempFolder();
+      replBinFolder = replTempSketch.makeTempFolder();
       
       /*
        * This is needed to add back the document listeners and make the editor
        * show the correct code, since otherwise the line creating a new sketch
-       * for replTempSketch make the PDE think that it has switched to a new editor
+       * for replTempSketch make the PDE think that it has switched to a new 
+       * editor
        */
       this.sketch.reload();
 
@@ -119,6 +128,12 @@ public class REPLEditor extends JavaEditor {
   
   //---------------------------------------------------------------------------
 
+  /**
+   * Similar to prepareInitialRun() method, but with a few minor modifications
+   * to suit the running of an REPL Sketch (such as no longer closing the 
+   * window, not requiring to save, etc. 
+   * @param replCode The code to be run
+   */
   protected void prepareInitialREPLRun(String replCode) {
     // We no longer want the window to close
 //    handleREPLStop();
@@ -137,13 +152,21 @@ public class REPLEditor extends JavaEditor {
     replTempSketch.getCurrentCode().setProgram(replCode);
   }
 
+  /**
+   * Handles the running of the REPL Console's "dummy" sketch
+   * @param code The code to be run
+   * @param refresh Whether the updated code can simply be hot swapped in (if
+   * false), or whether the sketch window needs to be closed and re-opened
+   * (if true)
+   */
   public void handleREPLRun(String code, boolean refresh) {
     new Thread(new Runnable() {
       public void run() {
         // TODO: Check how this is to be called, and where
         prepareInitialREPLRun(code);
         try {
-          replRuntime = handleREPLLaunch(replTempSketch, REPLEditor.this, refresh);
+          replRuntime = handleREPLLaunch(replTempSketch, 
+                                         REPLEditor.this, refresh);
         } catch (Exception e) {
           replConsole.getCommandPromptPane().handleException(e);
 //          No longer needed, since window doesn't close
@@ -152,7 +175,12 @@ public class REPLEditor extends JavaEditor {
       }
     }).start();
   }
-  
+
+  /**
+   * 
+   * @return Returns the NavigationFilter associated with this 
+   * REPLEditor's REPLConsolePane
+   */
   public CommandPromptPane getCommandPromptPane() {
     return replConsole.getCommandPromptPane();
   }
@@ -161,7 +189,7 @@ public class REPLEditor extends JavaEditor {
   public REPLRunner handleREPLLaunch(Sketch sketch, RunnerListener listener,
                              final boolean refresh) throws SketchException {
     JavaBuild build = new JavaBuild(sketch);
-    String appletClassName = build.build(srcFolder, binFolder, false);
+    String appletClassName = build.build(replSrcFolder, replBinFolder, false);
     if (appletClassName != null) {
       if (runtime == null || refresh || runtime.isFailedLoad()) {
 //        System.out.println("VM status at start: " + (runtime.vm() == null));
@@ -223,7 +251,12 @@ public class REPLEditor extends JavaEditor {
     //current.setProgram(editor.getText());
     sketch.getCurrentCode().setProgram(getText());
   }
-  
+
+  /**
+   * Used to, in addition to the function that the handleSave() method normally
+   * performs, recompile the sketch code, so that the hot swapper kicks in and
+   * the contents of the sketch window get updated accordingly.
+   */
   @Override
   public boolean handleSave(boolean immediately) {
     boolean res = super.handleSave(immediately);
@@ -242,12 +275,19 @@ public class REPLEditor extends JavaEditor {
     return res;
   };
 
+  /**
+   * Now not only close the PDE's sketch window, but close the sketch window
+   * associated with the REPL Mode's Console too
+   */
   @Override
   public void internalCloseRunner() {
     super.internalCloseRunner();
     handleREPLStop();
   }
 
+  /**
+   * Sets this Editor's code
+   */
   @Override
   public void setCode(SketchCode code) {
     super.setCode(code);
@@ -255,6 +295,10 @@ public class REPLEditor extends JavaEditor {
   
   //---------------------------------------------------------------------------
   
+  /**
+   * In addition to the normal Help menu options, add in a few extra options
+   * for the REPL Mode too.
+   */
   @Override
   public JMenu buildHelpMenu() {
     JMenu replHelpMenu = super.buildHelpMenu();

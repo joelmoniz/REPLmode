@@ -20,26 +20,40 @@ import processing.app.Preferences;
 public class REPLConsolePane extends JPanel {
   private static final long serialVersionUID = -7546489577830751456L;
 
+  /**
+   * The string representing the prompt
+   */
   private static final String PROMPT = ">> ";
 
+  /**
+   * The string representing a continuing prompt for when the user is
+   * in the process of entering 
+   */
   private static final String PROMPT_CONTINUATION = "...    ";
 
   protected JScrollPane replScrollPane;
 
   protected JTextArea replInputArea;
 
+  /**
+   * The REPL Console Pane's Navigation Filter, responsible for handling
+   * keystrokes- ensuring the up/down keys cycle through command history,
+   * the backspace/delete keys don't delete the prompt away, and the Enter
+   * key takes the user to the next line (with the appropriate action being
+   * performed). 
+   */
   protected CommandPromptPane replInputPaneFilter;
 
   public REPLConsolePane(REPLEditor editor) {
 
     replInputArea = new JTextArea(PROMPT);
 
-    // Set navigation filter
+    /* Set navigation filter */
     replInputPaneFilter = new CommandPromptPane(PROMPT, PROMPT_CONTINUATION,
                                                 editor, replInputArea);
     replInputArea.setNavigationFilter(replInputPaneFilter);
 
-    // Appearance-related
+    /* Appearance-related */
     String fontName = Preferences.get("editor.font.family");
     int fontSize = Preferences.getInteger("editor.font.size");
     replInputArea.setBackground(Color.BLACK);
@@ -47,6 +61,7 @@ public class REPLConsolePane extends JPanel {
     replInputArea.setCaretColor(Color.LIGHT_GRAY);
     replInputArea.setFont(new Font(fontName, Font.PLAIN, fontSize));
 
+    /* Setup scroll pane */
     replScrollPane = new JScrollPane(replInputArea);
     replScrollPane.setBorder(new EtchedBorder());
     replScrollPane
@@ -64,6 +79,10 @@ public class REPLConsolePane extends JPanel {
     replInputArea.requestFocusInWindow();
   }
 
+  /**
+   * 
+   * @return Returns the NavigationFilter associated with this REPLConsolePane
+   */
   public CommandPromptPane getCommandPromptPane() {
     return replInputPaneFilter;
   }
