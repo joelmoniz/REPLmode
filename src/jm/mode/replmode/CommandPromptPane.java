@@ -724,11 +724,12 @@ public class CommandPromptPane extends NavigationFilter {
   private void handleHelp(String command) {
     String[] args = command.split("\\s+");
     if (args.length == 1) {
+      consoleArea.setTabSize(2);
       printStatusMessage("The following command words are available. "
           + "Type `help <commandword>` for more information on "
           + "each command word:\n"
           + "* init\t* resize\t* clear\n"
-          + "* undo\t* redo\t* print\n"
+          + "* undo\t* redo  \t* print\n"
           + "* help\t* man");
     }
     else if (args.length == 2) {
