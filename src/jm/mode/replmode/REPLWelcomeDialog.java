@@ -47,7 +47,7 @@ public class REPLWelcomeDialog {
         
         try {
           // Time for PDE to setup
-          Thread.sleep(4000);
+          Thread.sleep(2500);
           if (dialog == null) {
             dialog = new REPLWelcomeDialog();
           }    
