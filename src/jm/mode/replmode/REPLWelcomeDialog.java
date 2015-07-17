@@ -40,10 +40,24 @@ public class REPLWelcomeDialog {
    * Display the welcome dialog at startup time
    */
   public static void showWelcome() {
-    if (dialog == null) {
-      dialog = new REPLWelcomeDialog();
-    }    
-    dialog.displayWelcomeDialog();
+    Thread t = new Thread (new Runnable() {
+      
+      @Override
+      public void run() {
+        
+        try {
+          // Time for PDE to setup
+          Thread.sleep(4000);
+          if (dialog == null) {
+            dialog = new REPLWelcomeDialog();
+          }    
+          dialog.displayWelcomeDialog();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+    t.start();
   }
   
   /**
