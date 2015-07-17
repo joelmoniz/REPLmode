@@ -450,20 +450,20 @@ public class CommandPromptPane extends NavigationFilter {
         isDone = handleUndo(command, true);
         component.replaceSelection(prompt);
       }
-    } else if (firstCommandWord.equals(CommandList.PRINT_COMMAND)) {
+    } else if (firstCommandWord.equals(CommandList.CODIFY_COMMAND)) {
       // Always have isDone as false, since we really don't want anything 
       // to get updated
       isDone = false;
       if (isContinuing) {
         /*
-         * Don't permit the user to print code as a function in the midst of a
-         * command block
+         * Don't permit the user to convert code into a function in the
+         * midst of a command block
          */
         printStatusMessage("Oops! REPL Mode is in the midst of another "
             + "command (block)");
         component.replaceSelection(promptContinuation);
       } else {
-        handlePrintCode(command);
+        handleCodify(command);
         component.replaceSelection(prompt);
       }
     } else if (firstCommandWord.equals(CommandList.HELP_COMMAND)) {
@@ -684,24 +684,24 @@ public class CommandPromptPane extends NavigationFilter {
   }
 
   /**
-   * Handles the <code>print</code> command word. Also ensures that a 
+   * Handles the <code>codify</code> command word. Also ensures that a 
    * parameter representing the function name is passed along with 
-   * <code>print</code>, and that the parameter is a valid function name.
+   * <code>codify</code>, and that the parameter is a valid function name.
    * @param command The string entered by the user which contains the
-   * <code>print</code> command word  
+   * <code>codify</code> command word  
    */
-  private void handlePrintCode(String command) {
+  private void handleCodify(String command) {
     String[] args = command.split("\\s+");
     if (args.length != 2) {
       if (args.length > 2) {
-        printStatusMessage("Error: print should have only "
+        printStatusMessage("Error: codify should have only "
             + "a single function name as argument");
       } else {
-        printStatusMessage("Error: print should have only "
+        printStatusMessage("Error: codify should have only "
             + "a single function name as argument");
       }
-    } else if (!commandListManager.hasStuffToPrint()) {
-      printStatusMessage("Nothing to print into a function yet.");
+    } else if (!commandListManager.hasStuffToCodify()) {
+      printStatusMessage("Nothing to codify into a function yet.");
     } else {
       if (!isValidFunctionName(args[1])) {
         printStatusMessage("Error: \"" + args[1] + "\""
@@ -729,7 +729,7 @@ public class CommandPromptPane extends NavigationFilter {
           + "Type `help <commandword>` for more information on "
           + "each command word:\n"
           + "* init\t* resize\t* clear\n"
-          + "* undo\t* redo  \t* print\n"
+          + "* undo\t* redo  \t* codify\n"
           + "* help\t* man");
     }
     else if (args.length == 2) {
@@ -773,13 +773,13 @@ public class CommandPromptPane extends NavigationFilter {
               + "* redo: \"Redoes\" the last undo\n"
               + "* redo x: \"Redoes\" the last x statements undone by an "
               + "undo");
-        } else if (args[1].equals(CommandList.PRINT_COMMAND)) {
-          printStatusMessage("\nprint\n-----\n"
+        } else if (args[1].equals(CommandList.CODIFY_COMMAND)) {
+          printStatusMessage("\ncodify\n-----\n"
               + "Adds a method of the void return type to the current tab, "
               + "the method body consisting of all statements used to display "
               + "the output visible at present (i.e., all statements from the "
               + "last init, excluding those undone). Takes the format "
-              + "`print x`, where x is a string representing the method "
+              + "`codify x`, where x is a string representing the method "
               + "name.");
         } else if (args[1].equals(CommandList.HELP_COMMAND)) {
           printStatusMessage("\nhelp(noun): something or someone that helps.\n"

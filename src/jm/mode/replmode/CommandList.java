@@ -53,7 +53,7 @@ public class CommandList {
   /**
    * An instance of processing's auto-formatter. Used to pretty up code before
    * appending it at the end of the current sketch when the user types
-   * <code>print</code>
+   * <code>codify</code>
    */
   AutoFormat formatter;
 
@@ -89,10 +89,10 @@ public class CommandList {
   public static final String REDO_COMMAND = "redo";
 
   /**
-   * Command word used to print the code responsible for generating the
+   * Command word used to convert the code responsible for generating the
    * current sketch output into a function in the active sketch
    */
-  public static final String PRINT_COMMAND = "print";
+  public static final String CODIFY_COMMAND = "codify";
 
   /**
    * Command word used to print a help menu 
@@ -109,7 +109,7 @@ public class CommandList {
    */
   public static final String[] REPL_COMMAND_SET = {
     CLEAR_COMMAND, INIT_COMMAND, RESIZE_COMMAND, UNDO_COMMAND, REDO_COMMAND,
-    PRINT_COMMAND, HELP_COMMAND, MAN_COMMAND};
+    CODIFY_COMMAND, HELP_COMMAND, MAN_COMMAND};
 
   public static final String SIZE_PD2 = "P2D";
 
@@ -450,7 +450,7 @@ public class CommandList {
   /**
    * @return True if the user has entered legitimate code
    */
-  public boolean hasStuffToPrint() {
+  public boolean hasStuffToCodify() {
     return (commandList != null && !commandList.isEmpty());
   }
 

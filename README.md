@@ -50,7 +50,7 @@ The REPL Console Commands
   * **`redo`**: Used to redo a (set of) statement(s). Note that a redo can only be performed immendiately after an undo. Can be called in one of 2 ways:
     * `redo`: "Redoes" the last undo
     * `redo x`: "Redoes" the last x statements undone by an undo
-  * **`print`**: Used to get a method that, if called, displays everything currently visible in the sketch window. More precisely, it adds a method of the void return type to the current tab, the method body consisting of all statements used to display the output visible at present (i.e., all statements from the last init, excluding those undone). Takes the format `print x`, where x is a string representing the method name.
+  * **`codify`**: Used to get a method that, if called, displays everything currently visible in the sketch window. More precisely, it adds a method of the void return type to the current tab, the method body consisting of all statements used to display the output visible at present (i.e., all statements from the last init, excluding those undone). Takes the format `codify x`, where x is a string representing the method name.
 
 Use case
 ---------
