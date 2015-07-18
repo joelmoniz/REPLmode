@@ -93,7 +93,10 @@ public class REPLWelcomeDialog {
         + "</strong><ul><li>Create a new sketch, type stuff in, and save it. "
         + "Alternately, open an existing sketch.</li><li>Run the sketch, and "
         + "leave the sketch window open.</li><li>Make required changes to the "
-        + "sketch, and voil&agrave;! Hot swapped!</li></ul></li></ul></html>";
+        + "sketch, and voil&agrave;! Hot swapped!</li></ul></li></ul>"
+        + "<small><p>Note 1: To view this dialog again, go to <b>Help > "
+        + "Getting Started</b></p><p>Note 2: To view a more comprehensive "
+        + "guide, go to <b>Help > REPL Mode- A Guide</b></p><small></html>";
     msgLabel = new JLabel(msg);
     Font msgFont = msgLabel.getFont();
     msgLabel.setFont(new Font(msgFont.getFontName(), Font.PLAIN, 

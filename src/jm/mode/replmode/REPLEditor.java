@@ -318,6 +318,14 @@ public class REPLEditor extends JavaEditor {
     });
     replHelpMenu.add(item);
 
+    item = new JMenuItem("REPL Mode- A Guide");
+    item.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        showReferenceFile(replMode.getREPLReference());
+      }
+    });
+    replHelpMenu.add(item);
+
     item = new JMenuItem("Report a bug");
     item.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {

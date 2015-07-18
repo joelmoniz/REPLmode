@@ -32,6 +32,11 @@ public class REPLMode extends JavaMode {
   File binFolder;
   
   /**
+   * Folder where REPL Mode's reference is stored
+   */
+  protected File replReference;
+
+  /**
    * Describes whether or not the sketch is running.
    * @deprecated Not really used anywhere
    */
@@ -54,6 +59,8 @@ public class REPLMode extends JavaMode {
     examplesFolder = new File(javamodeFolder, "examples");
     librariesFolder = new File(javamodeFolder, "libraries");
     referenceFolder = new File(javamodeFolder, "reference");
+    
+    replReference = new File(folder, "reference");
     
     srcFolder = null;
     binFolder = null;        
@@ -173,4 +180,11 @@ public class REPLMode extends JavaMode {
   // public Editor createEditor(Base base, String path, EditorState state) {
   // return new REPLEditor(base, path, state, this);
   // }
+
+  /**
+   * @return Returns the HTML file consisting of a guide for the REPL Mode 
+   */
+  public File getREPLReference() {
+    return  new File(replReference, "REPLModeGuide.html");
+  }
 }
