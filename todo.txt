@@ -45,6 +45,7 @@ Usage
     [X] man
 [ ] Allow import statements
     [ ] This would include handling PDF in init
+[ ] Allow user to copy text immediately via Ctrl+C
 
 Internals
 =========

@@ -1,6 +1,10 @@
 package jm.mode.replmode;
 
+import java.awt.Component;
+import java.awt.Event;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -8,6 +12,8 @@ import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
@@ -84,7 +90,22 @@ public class CommandPromptPane extends NavigationFilter {
    * not with respect to the starting of the line)
    */
   int rowStartPosition;
-  
+
+  /**
+   * Whether or not the "mark and copy" mode is active
+   */
+  boolean isMarked;
+
+  /**
+   * Whether or not the cursor has been moved after being marked 
+   */
+  boolean isMoved;
+
+  /**
+   * Right-click menu that has options to mark and copy, paste
+   */
+  JPopupMenu rightClickMenu;
+
   /**
    * Regex Pattern representing a single import in the statement
    */
@@ -110,6 +131,8 @@ public class CommandPromptPane extends NavigationFilter {
     isContinuing = false;
     openLeftCurlies = 0;
     rowStartPosition = 0;
+    isMarked = false;
+    isMoved = false;
 
     // TODO: Check these next 4 lines out. Refactor later if necessary.
     deletePrevious = component.getActionMap().get("delete-previous");
@@ -117,25 +140,60 @@ public class CommandPromptPane extends NavigationFilter {
     component.getActionMap().put("delete-previous", new BackspaceAction());
     component.getActionMap().put("insert-break", new EnterAction());
 
-    component.getInputMap()
-        .put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "up");
+    component.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+                                "up");
     component.getActionMap().put("up", new KeyAction("up"));
     component.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
                                 "down");
     component.getActionMap().put("down", new KeyAction("down"));
+    
+//    component.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+//                                                       Event.CTRL_MASK),
+//                                                       "copy");
+//    component.getActionMap().put("copy", new KeyAction("copy"));
 
     component.setCaretPosition(prefixLength);
     component.setLineWrap(true);
+    
+    rightClickMenu = new REPLConsolePopupMenu();
+    component.setComponentPopupMenu(rightClickMenu);
   }
 
   public void setDot(NavigationFilter.FilterBypass fb, int dot,
                      Position.Bias bias) {
-    fb.setDot(Math.max(dot, rowStartPosition + prefixLength), bias);
+    if (!isMarked) {
+      fb.setDot(Math.max(dot, rowStartPosition + prefixLength), bias);
+    }
+    else {
+      if (isMoved) {
+        consoleArea.setEditable(true);
+        isMoved = false;
+        isMarked = false;
+        fb.setDot(Math.max(dot, rowStartPosition + prefixLength), bias);
+        consoleArea.getCaret().setVisible(true);
+//        consoleArea.setCaretPosition(consoleArea.getText().length());
+      }
+      else {
+        fb.setDot(dot, bias);
+      }
+    }
   }
 
   public void moveDot(NavigationFilter.FilterBypass fb, int dot,
                       Position.Bias bias) {
-    fb.moveDot(Math.max(dot, rowStartPosition + prefixLength), bias);
+    if (!isMarked) {
+      fb.moveDot(Math.max(dot, rowStartPosition + prefixLength), bias);
+    }
+    else {
+      isMoved = true;
+      fb.moveDot(dot, bias);
+//      if (consoleArea.getSelectionStart() != consoleArea.getSelectionEnd()) {
+//        consoleArea.copy();
+//        isMarked = false;
+//        fb.setDot(Math.max(dot, rowStartPosition + prefixLength), bias);
+//        consoleArea.setEditable(true);
+//      }
+    }
   }
 
   /**
@@ -179,6 +237,12 @@ public class CommandPromptPane extends NavigationFilter {
     private static final long serialVersionUID = 2813908067205522536L;
 
     public void actionPerformed(ActionEvent e) {
+      /*
+       * If in the process of marking and copying, don't not do nothin' 
+       */
+      if (isMarked) {
+        return;
+      }
       JTextArea component = (JTextArea) e.getSource();
       component.setCaretPosition(component.getText().length());
       String command = getLastLine();
@@ -846,6 +910,7 @@ public class CommandPromptPane extends NavigationFilter {
 
     private static final long serialVersionUID = 3382543935199626852L;
 
+    //TODO: Replace this with either string constants or enums
     private String key;
 
     public KeyAction(String string) {
@@ -856,6 +921,22 @@ public class CommandPromptPane extends NavigationFilter {
       String cycledCommand = "";
       JTextArea component = (JTextArea) e.getSource();
       String prevCommand = getLastLine();
+      
+      /*
+       * Don't do anything if the user has currently marked some text and is
+       * preparing to copy, unless the user hits ctrl+C
+       */
+      if (isMarked) {
+//        if (key.equals("copy")) {
+//          consoleArea.setEditable(true);
+//          consoleArea.copy();
+//          consoleArea.setCaretPosition(consoleArea.getText().length());
+//          isMarked = false;
+//          isMoved = false;
+//        }
+        return;
+      }
+      
       if (key.equals("up")) {
         cycledCommand = commandHistManager.getPreviousCommand(prevCommand);
       } else if (key.equals("down")) {
@@ -1079,5 +1160,93 @@ public class CommandPromptPane extends NavigationFilter {
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
+  }
+
+  /**
+   * Class responsible for showing the popup menu when the user right-clicks
+   * in the REPL Console area.
+   * @author Joel Moniz
+   *
+   */
+  public class REPLConsolePopupMenu extends JPopupMenu {
+    private static final long serialVersionUID = -3180102449492623366L;
+    
+    JMenuItem copyMenu, pasteMenu;
+
+    public REPLConsolePopupMenu() {
+      rightClickMenu = new JPopupMenu();
+      
+      JMenuItem item;
+      
+      item = new JMenuItem("Mark");
+      item.addActionListener(new ActionListener() {
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          consoleArea.setEditable(false);
+          isMarked = true;
+          isMoved = false;
+        }
+      });
+      this.add(item);
+      
+      copyMenu = new JMenuItem("Copy");
+      copyMenu.addActionListener(new ActionListener() {
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          consoleArea.setEditable(true);
+          consoleArea.copy();
+          consoleArea.setCaretPosition(consoleArea.getText().length());
+          isMarked = false;
+          isMoved = false;
+        }
+      });
+      this.add(copyMenu);
+      
+      item = new JMenuItem("Copy All");
+      item.addActionListener(new ActionListener() {
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          isMarked = true;
+          consoleArea.selectAll();
+          consoleArea.copy();
+          consoleArea.setCaretPosition(consoleArea.getText().length());
+        }
+      });
+      this.add(item);
+      
+      pasteMenu = new JMenuItem("Paste");
+      pasteMenu.addActionListener(new ActionListener() {
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          consoleArea.setEditable(true);
+          consoleArea.paste();
+          isMarked = false;
+        }
+      });
+      this.add(pasteMenu);
+    }
+
+    /**
+     * Overridden to selectively diable copy and/or paste if not applicable
+     */
+    @Override
+    public void show(Component component, int x, int y) {
+      /*
+       * Copy is applicable only if something is marked
+       */
+      copyMenu.setEnabled(isMoved);
+      
+      /*
+       * Paste is applicable only if the clipboard contains text.
+       * Code taken as is from Editor$PasteAction.canDo()
+       */
+      pasteMenu.setEnabled(getToolkit().getSystemClipboard()
+          .isDataFlavorAvailable(DataFlavor.stringFlavor));
+      super.show(component, x, y);
+    }
   }
 }
