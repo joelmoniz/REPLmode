@@ -106,3 +106,8 @@ A typical "interaction" with the REPL Console may look like the following:
 Bugs and Feature requests
 -------------------------
 Please file bugs and feature requests [here](https://github.com/joelmoniz/REPLmode/issues).
+
+Acknowledgements
+----------------
+A huge thank you to [Manindra Moharana](http://www.mkmoharana.com/) for helping me out every step of the way- in figuring out how to implement the UI, how to get the REPL part up and running, suggesting using the hot swapper, reviewing and testing everything extremely thoroughly, and so much more.  
+Special thanks to [Florian Jenett](http://www.florianjenett.de/) for first conceiving the idea of an REPL Mode, for helping me out with the UI, and for suggesting a bunch of new handy features.
