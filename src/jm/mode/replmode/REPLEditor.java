@@ -114,7 +114,7 @@ public class REPLEditor extends JavaEditor {
     replConsole = new REPLConsolePane(this);
 
     EditorFooter footer = super.createFooter();
-    footer.addPanel("REPL", replConsole);
+    footer.addPanel(replConsole, "REPL");
 
     replConsole.addComponentListener(new ComponentAdapter() {
       @Override
