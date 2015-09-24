@@ -26,12 +26,14 @@ package jm.mode.replmode;
 import java.io.File;
 
 import processing.app.Base;
-import processing.app.ui.Editor;
-import processing.app.ui.EditorState;
 import processing.app.Mode;
+import processing.app.Platform;
 import processing.app.RunnerListener;
 import processing.app.Sketch;
 import processing.app.SketchException;
+import processing.app.ui.Editor;
+import processing.app.ui.EditorException;
+import processing.app.ui.EditorState;
 import processing.mode.java.JavaBuild;
 import processing.mode.java.JavaMode;
 import processing.mode.java.runner.Runner;
@@ -78,7 +80,7 @@ public class REPLMode extends JavaMode {
      * Do this to use the JavaMode's examples, libraries and reference, since
      * all of them are perfectly applicable to the REPL Mode
      */
-    File javamodeFolder = Base.getContentFile("modes/java");
+    File javamodeFolder = Platform.getContentFile("modes/java");
     examplesFolder = new File(javamodeFolder, "examples");
     librariesFolder = new File(javamodeFolder, "libraries");
     referenceFolder = new File(javamodeFolder, "reference");
@@ -103,9 +105,10 @@ public class REPLMode extends JavaMode {
 
   /**
    * Create a new editor associated with this mode.
+   * @throws EditorException 
    */
   @Override
-  public Editor createEditor(Base base, String path, EditorState state) {
+  public Editor createEditor(Base base, String path, EditorState state) throws EditorException {
     /*
      * Teensy little hack to show the welcome screen when the first time an
      * Editor is created, but not after that. Required since an REPLMode object
@@ -190,7 +193,11 @@ public class REPLMode extends JavaMode {
       new Thread(new Runnable() {
         public void run() {
           isRunning = true;
-          runtime.launch(present);  // this blocks until finished
+          if (present) {
+            runtime.present(null);
+          } else {
+            runtime.launch(null);
+          }
           isRunning = false;
         }
       }).start();

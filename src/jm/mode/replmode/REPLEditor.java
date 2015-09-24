@@ -36,11 +36,14 @@ import javax.swing.JPanel;
 
 import processing.app.Base;
 import processing.app.Mode;
+import processing.app.Platform;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
 import processing.app.Sketch;
 import processing.app.SketchCode;
 import processing.app.SketchException;
+import processing.app.Util;
+import processing.app.ui.EditorException;
 import processing.app.ui.EditorFooter;
 import processing.app.ui.EditorState;
 import processing.mode.java.JavaBuild;
@@ -93,7 +96,8 @@ public class REPLEditor extends JavaEditor {
 
   REPLMode replMode;
 
-  protected REPLEditor(Base base, String path, EditorState state, Mode mode) {
+  protected REPLEditor(Base base, String path, EditorState state, Mode mode)
+      throws EditorException {
     super(base, path, state, mode);
 
     replMode = (REPLMode) mode;
@@ -101,7 +105,7 @@ public class REPLEditor extends JavaEditor {
     runtime = null;
 
     try {
-      untitledFolderLocation = Base.createTempFolder("untitled", "repl", null);
+      untitledFolderLocation = Util.createTempFolder("untitled", "repl", null);
 
       (new File(untitledFolderLocation, sketch.getFolder().getName())).mkdirs();
       File subdir = new File(untitledFolderLocation, sketch.getFolder()
@@ -352,7 +356,7 @@ public class REPLEditor extends JavaEditor {
     item = new JMenuItem("Report a bug");
     item.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Base.openURL("https://github.com/joelmoniz/REPLmode/issues/new");
+        Platform.openURL("https://github.com/joelmoniz/REPLmode/issues/new");
       }
     });
     replHelpMenu.add(item);

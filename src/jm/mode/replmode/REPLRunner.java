@@ -30,11 +30,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
-import processing.app.Base;
+import processing.app.Platform;
 import processing.app.RunnerListener;
 import processing.app.SketchException;
 import processing.app.exec.StreamRedirectThread;
 import processing.core.PApplet;
+import processing.data.StringList;
 import processing.mode.java.JavaBuild;
 import processing.mode.java.runner.MessageSiphon;
 import processing.mode.java.runner.Runner;
@@ -200,7 +201,7 @@ public class REPLRunner extends Runner {
    * @return True if the VM was launched
    */
   public boolean launchREPLVirtualMachine() {
-    return launchVirtualMachine(false);
+    return launchVirtualMachine(false, null);
   }
 
   /**
@@ -208,12 +209,12 @@ public class REPLRunner extends Runner {
    * class, except that this adds in an extra VM argument for the hot swapper 
    */
   @Override
-  public boolean launchVirtualMachine(boolean presenting) {
+  public boolean launchVirtualMachine(boolean presenting, String[] args) {
     int port = 8000 + (int) (Math.random() * 1000);
     String portStr = String.valueOf(port);
 
-    String[] vmParams = getMachineParams();
-    String[] sketchParams = getSketchParams(presenting);    
+    StringList vmParams = getMachineParams();
+    StringList sketchParams = getSketchParams(presenting, args);
 
     /**
      * This contains the string representing the VM argument for the hot 
@@ -239,11 +240,13 @@ public class REPLRunner extends Runner {
     String jdwpArg = "-agentlib:jdwp=transport=dt_socket,address=" 
         + portStr + ",server=y,suspend=y";
     // Everyone works the same under Java 7 (also on OS X)
-    String[] commandArgs = 
-        new String[] { Base.getJavaPath(), jdwpArg,hotSwapArg };
-    commandArgs = PApplet.concat(commandArgs, vmParams);
-    commandArgs = PApplet.concat(commandArgs, sketchParams);
-    launchJava(commandArgs);
+    StringList commandArgs = new StringList();
+    commandArgs.append(Platform.getJavaPath());
+    commandArgs.append(jdwpArg);
+    commandArgs.append(hotSwapArg);
+    commandArgs.append(vmParams);
+    commandArgs.append(sketchParams);
+    launchJava(commandArgs.array());
 
     /*
      * This part seems to be used to get the vm, that is in turn used not only
